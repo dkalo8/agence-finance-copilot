@@ -123,4 +123,36 @@ describe('marketContextAgent', () => {
       expect(insight.severity).toBe('warning');
     });
   });
+
+  describe('Cycle 5 — Finnhub failure is non-critical', () => {
+    const quotesOnly = {
+      quotes: {
+        AAPL: { price: 185.50, changePercent: 1.25, name: 'Apple Inc.' },
+      },
+    };
+
+    it('still returns market_quote insights when news is null', () => {
+      const results = marketContextAgent({ tickers: ['AAPL'] }, { ...quotesOnly, news: null });
+      const quotes = results.filter((i) => i.type === 'market_quote');
+      expect(quotes).toHaveLength(1);
+    });
+
+    it('still returns market_quote insights when news key is absent', () => {
+      const results = marketContextAgent({ tickers: ['AAPL'] }, quotesOnly);
+      const quotes = results.filter((i) => i.type === 'market_quote');
+      expect(quotes).toHaveLength(1);
+    });
+
+    it('returns no market_sentiment insights when news is null', () => {
+      const results = marketContextAgent({ tickers: ['AAPL'] }, { ...quotesOnly, news: null });
+      const sentiments = results.filter((i) => i.type === 'market_sentiment');
+      expect(sentiments).toHaveLength(0);
+    });
+
+    it('does not throw when news is null', () => {
+      expect(() => {
+        marketContextAgent({ tickers: ['AAPL'] }, { ...quotesOnly, news: null });
+      }).not.toThrow();
+    });
+  });
 });
