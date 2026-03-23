@@ -21,6 +21,20 @@ function marketContextAgent(userData, marketData) {
     });
   });
 
+  const news = marketData?.news || {};
+
+  tickers.forEach((ticker) => {
+    const article = news[ticker];
+    if (!article) return;
+
+    insights.push({
+      type: 'market_sentiment',
+      ticker,
+      message: `${ticker} news: ${article.headline}`,
+      severity: article.sentimentScore >= 0.5 ? 'info' : 'warning',
+    });
+  });
+
   return insights;
 }
 
