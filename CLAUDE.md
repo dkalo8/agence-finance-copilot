@@ -13,24 +13,32 @@ See @docs/PRD.md for full product context.
 - Backend: Node.js + Express (server/)
 - Database: PostgreSQL
 - Auth: JWT
-- External APIs: Plaid (bank data), Finnhub (market data), Alpaca (paper trading)
+- Alpaca: primary market data source + paper trade execution
+- Plaid: banking and transaction data only
+- Finnhub: news and sentiment only (NOT price data)
 - LLM: Anthropic Claude (orchestrator/judge.js)
 - Testing: Jest + Supertest
 
+## API Responsibility Map
+- Price quotes, portfolio positions, P&L, trade execution → Alpaca
+- Transaction history, bank balances → Plaid
+- News articles, sentiment scoring → Finnhub
+- Insight synthesis → Anthropic
+
 ## Architecture
-- server/agents/          — individual AI analysis agents (pure functions)
-  - spendingAgent.js      — categorized spend analysis, MoM comparisons
-  - anomalyAgent.js       — unusual transaction detection
-  - goalsAgent.js         — savings pace tracking
-  - marketContextAgent.js — stock quotes, 24h change, news sentiment (Finnhub)
-  - portfolioAgent.js     — portfolio concentration, risk exposure (Alpaca)
-  - autopilotAgent.js     — rule-based trade execution (Alpaca paper)
-- server/orchestrator/    — parallel agent runner + LLM-as-judge synthesis
-  - index.js              — runs all agents in parallel via Promise.all
-  - judge.js              — Anthropic call that synthesizes agent outputs
-- server/routes/          — Express API routes (/api/v1/*)
-- server/db/              — all DB queries (never write SQL inline)
-- server/middleware/      — JWT auth, error handling
+- server/agents/           — individual AI analysis agents (pure functions)
+  - spendingAgent.js       — categorized spend analysis, MoM comparisons (Plaid)
+  - anomalyAgent.js        — unusual transaction detection (Plaid)
+  - goalsAgent.js          — savings pace tracking (Plaid)
+  - portfolioAgent.js      — concentration risk, P&L, positions (Alpaca)
+  - marketContextAgent.js  — quotes, 24h change, news sentiment (Alpaca + Finnhub news)
+  - autopilotAgent.js      — rule-based paper trade execution (Alpaca)
+- server/orchestrator/     — parallel agent runner + LLM-as-judge synthesis
+  - index.js               — runs all agents in parallel via Promise.all
+  - judge.js               — Anthropic call that synthesizes agent outputs
+- server/routes/           — Express API routes (/api/v1/*)
+- server/db/               — all DB queries (never write SQL inline)
+- server/middleware/       — JWT auth, error handling
 
 ## Commands
 npm run dev        # start Express server with nodemon
@@ -61,10 +69,11 @@ npm run test:watch # TDD mode — use during red-green-refactor
 - Keep agents as pure functions — they must be independently testable
 
 ## Don'ts
+- NEVER use Finnhub for price data — Alpaca handles all quotes
+- NEVER use Plaid for investment data — Alpaca handles all portfolio data
 - NEVER write SQL outside server/db/queries.js
 - NEVER hardcode API keys — always use process.env
 - NEVER run agents sequentially — always Promise.all in orchestrator
 - NEVER implement beyond what failing tests currently require
 - NEVER commit directly to main
-- NEVER use --force push
 - NEVER set ALPACA_PAPER=false — paper trading only for P3

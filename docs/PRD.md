@@ -18,15 +18,24 @@ is something no current product surfaces. Agence does.
 1. Individual user — personal finance + investment tracking
 2. Household user — shared dashboard with a partner
 
+## API Responsibility Map
+| Data Need | API |
+|---|---|
+| Bank transactions, balances | Plaid |
+| Portfolio positions, P&L, quotes | Alpaca |
+| Paper trade execution | Alpaca |
+| News articles, sentiment | Finnhub |
+| Insight synthesis | Anthropic |
+
 ## Agent Architecture
 All agents are pure functions that run in parallel via Promise.all:
 
-- spendingAgent      — categorized spending, MoM comparisons, budget flags
-- anomalyAgent       — unusual transaction detection
-- goalsAgent         — savings goal pace tracking
-- marketContextAgent — stock/ETF quotes, 24h change, news via Finnhub
-- portfolioAgent     — concentration risk, P&L, position analysis via Alpaca
-- autopilotAgent     — rule-based paper trade execution via Alpaca
+- spendingAgent      — categorized spending, MoM comparisons, budget flags (Plaid)
+- anomalyAgent       — unusual transaction detection (Plaid)
+- goalsAgent         — savings goal pace tracking (Plaid)
+- portfolioAgent     — concentration risk, P&L, position analysis (Alpaca)
+- marketContextAgent — quotes, 24h change, news sentiment (Alpaca + Finnhub news)
+- autopilotAgent     — rule-based paper trade execution (Alpaca)
 
 ## Core Features (P3 scope)
 - Connect bank accounts via Plaid sandbox
@@ -60,6 +69,6 @@ See @docs/TODO-post-p3.md
 
 ## External APIs
 - Plaid: transaction data, account balances (sandbox)
-- Finnhub: stock quotes, 24h price change, market news (free tier)
-- Alpaca: portfolio data, paper trade execution (paper environment)
+- Alpaca: portfolio positions, quotes, paper trade execution (paper environment)
+- Finnhub: news articles and sentiment scoring only
 - Anthropic: LLM-as-judge synthesis layer
