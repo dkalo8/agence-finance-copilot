@@ -17,4 +17,27 @@ describe('marketContextAgent', () => {
       expect(result).toEqual([]);
     });
   });
+
+  describe('Cycle 2 — Alpaca failure', () => {
+    it('returns empty array when marketData is null', () => {
+      const result = marketContextAgent({ tickers: ['AAPL'] }, null);
+      expect(result).toEqual([]);
+    });
+
+    it('returns empty array when quotes is null', () => {
+      const result = marketContextAgent({ tickers: ['AAPL'] }, { quotes: null, news: {} });
+      expect(result).toEqual([]);
+    });
+
+    it('returns empty array when quotes is missing entirely', () => {
+      const result = marketContextAgent({ tickers: ['AAPL'] }, { news: {} });
+      expect(result).toEqual([]);
+    });
+
+    it('does not throw when a specific ticker is missing from quotes', () => {
+      expect(() => {
+        marketContextAgent({ tickers: ['AAPL', 'TSLA'] }, { quotes: {}, news: {} });
+      }).not.toThrow();
+    });
+  });
 });
