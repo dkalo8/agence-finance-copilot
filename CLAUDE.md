@@ -43,6 +43,18 @@ npm run test:watch # TDD mode for red-green-refactor
 - Unit tests live beside source files as *.test.js
 - Integration tests go in server/tests/integration/
 
+## Dev Workflow (follow this every session, no exceptions)
+
+1. **One task at a time** — pick the next item from `project-memory/progress.md`
+2. **TDD** — write failing test first, then implement until green
+3. **Verify** — run `npm run lint && npm test` in server/; both must pass clean
+4. **Log** — append a note to the active `project-memory/batch-fixes/YYYY-MM-DD-*.md` (create if new session)
+5. **Update progress** — update `project-memory/progress.md` to reflect current state
+6. **Commit + push** — `git add`, commit with Conventional Commits format, push to `dkalo8/cs7180_project3_agence`
+7. **Repeat** — pick next task
+
+Never accumulate multiple unverified changes before committing. Small steps, verify, commit, repeat.
+
 ## On Compaction
 Preserve these rules above all else: API boundary map (Alpaca/Plaid/Finnhub responsibilities), ALPACA_PAPER=false prohibition, SQL quarantine, agent purity, parallel execution via Promise.all.
 
