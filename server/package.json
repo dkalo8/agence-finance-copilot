@@ -5,8 +5,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "jest --runInBand",
-    "test:watch": "jest --watch --runInBand",
+    "test": "jest --runInBand --forceExit",
+    "test:watch": "jest --watch --runInBand --forceExit",
     "lint": "eslint . --ignore-pattern node_modules/"
   },
   "keywords": [],
