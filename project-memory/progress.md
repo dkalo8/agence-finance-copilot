@@ -2,7 +2,7 @@
 
 _Last updated: 2026-03-28_
 
-## Status: ~10% complete
+## Status: ~25% complete
 
 **Deadline: April 20, 2026** (CS 7180 Project 3 — 200 pts, 20% of final grade)
 
@@ -14,52 +14,77 @@ _Last updated: 2026-03-28_
 - `server/agents/spendingAgent.js` — categorized spending, MoM comparisons, budget flags. Pure function, fully tested (5 TDD cycles).
 - `server/agents/marketContextAgent.js` — Alpaca price quotes + Finnhub news sentiment per ticker. Pure function, fully tested (5 TDD cycles).
 
+### Orchestrator (complete)
+- `server/orchestrator/index.js` — `Promise.all` over all 6 agents, `safeRun` isolation (agent throws → empty array, no crash). Returns `{ spending, anomaly, goals, portfolio, market, autopilot }`. 8 tests.
+- `server/orchestrator/judge.js` — LLM-as-judge via `claude-sonnet-4-6`. Structured JSON input, explicit scoring dimensions (actionability/urgency/crossDomainRelevance/confidence). Fallback: returns flattened raw insights on Anthropic failure. 9 tests.
+
 ### Infrastructure
-- `server/package.json` — all deps wired (express, pg, plaid, alpaca, finnhub, anthropic, jwt, bcrypt)
+- `server/package.json` — all deps wired including `@anthropic-ai/sdk@^0.80.0`
 - `server/.eslintrc.json` — ESLint configured, passes clean
-- Jest configured, `npm test` works
+- Jest with `--forceExit` (fixes hanging on open handles)
 - `.env.example` — all env vars documented
 - `docs/PRD.md` — full product requirements
-- `CLAUDE.md` — API boundaries, rules, architecture map
+- `CLAUDE.md` — API boundaries, rules, architecture map, dev workflow
+- `project-memory/` — progress, context (harness design, decisions), batch-fixes log
+
+### Test suite
+- **47/47 passing** across 4 test suites
+- Lint: clean
 
 ---
 
-## What's Missing (Build Order)
+## Next Steps (in order)
 
-### 1. Orchestrator + Judge (HIGHEST PRIORITY — unblocks everything)
-- `server/orchestrator/index.js` — `Promise.all` over all 6 agents, returns merged insights[]
-- `server/orchestrator/judge.js` — Anthropic LLM synthesis: receives structured JSON from all agents, returns ranked insight feed with scored dimensions
+### NEXT: Remaining 4 Agents
+Build each via TDD (red → green → commit). They are pure functions, zero external dependencies — fastest wins.
 
-### 2. Remaining 4 Agents (each via TDD cycles)
-- `server/agents/anomalyAgent.js` — unusual transaction detection (Plaid data)
-- `server/agents/goalsAgent.js` — savings goal pace tracking (Plaid data)
-- `server/agents/portfolioAgent.js` — concentration risk, P&L, position analysis (Alpaca)
-- `server/agents/autopilotAgent.js` — rule-based paper trade execution (Alpaca)
+1. **`server/agents/anomalyAgent.js`** ← START HERE
+   - Input: `userData` (`{ transactions, balances }`)
+   - Output: `[{ type, message, severity, amount, merchant }]`
+   - Logic: flag transactions that are statistically unusual (large single charge, duplicate merchant, round-number amounts, new merchant category)
 
-### 3. Backend Wiring
-- `server/index.js` — Express app entry point, middleware mount, route registration
-- `server/middleware/auth.js` — JWT verification middleware
-- `server/middleware/errors.js` — centralized error handler
-- `server/db/queries.js` — ALL SQL queries (schema + migrations needed first)
-- `server/routes/auth.js` — POST /api/v1/auth/register, /login, /logout
-- `server/routes/accounts.js` — Plaid account connections, balances
-- `server/routes/portfolio.js` — Alpaca positions, P&L
-- `server/routes/trades.js` — paper trade execution
-- `server/routes/insights.js` — GET /api/v1/insights (calls orchestrator)
+2. **`server/agents/goalsAgent.js`**
+   - Input: `userData` (`{ goals, transactions, balances }`)
+   - Output: `[{ type, goalName, message, pace, projectedDate }]`
+   - Logic: compare current savings pace vs goal target date, flag behind/on-track/ahead
 
-### 4. Frontend (client/)
-- Still default Create React App boilerplate
-- Needs: auth flow, Plaid Link integration, insights feed, portfolio view, autopilot controls, goals tracker
+3. **`server/agents/portfolioAgent.js`**
+   - Input: `marketData` (`{ positions, quotes }`)
+   - Output: `[{ type, message, severity, ticker? }]`
+   - Logic: concentration risk (any position > 20% of portfolio), unrealized P&L flags, cash drag
+
+4. **`server/agents/autopilotAgent.js`**
+   - Input: `userData`, `marketData`
+   - Output: `[{ type, action, ticker, quantity, reason }]`
+   - Logic: rule-based paper trade signals (e.g. rebalance when concentration > threshold, buy on dip)
+
+### After Agents: Backend Wiring (do as a unit)
+
+Design order matters — each layer depends on the one below:
+
+1. **DB schema + `server/db/queries.js`** — define tables first (users, accounts, goals, trades); query functions cascade from schema
+2. **`server/middleware/auth.js`** — JWT verification; needed by all protected routes
+3. **`server/middleware/errors.js`** — centralized error handler
+4. **`server/index.js`** — Express app, middleware mount, route registration
+5. **Routes** (in dependency order):
+   - `auth.js` — POST /api/v1/auth/register, /login, /logout
+   - `accounts.js` — Plaid account connections, balances
+   - `portfolio.js` — Alpaca positions, P&L
+   - `trades.js` — paper trade execution
+   - `insights.js` — GET /api/v1/insights (calls orchestrator → judge)
+
+### After Backend: Frontend (client/)
+- Auth flow (login/register)
+- Plaid Link integration (connect bank accounts)
+- Insights feed (ranked output from judge)
+- Portfolio view (Alpaca positions)
+- Goals tracker
+- Autopilot controls
 - Functional components only, no class components
 
-### 5. Integration Tests
-- `server/tests/integration/` is empty
-- Need: auth flow, insights endpoint, orchestrator integration
-
-### 6. CI/CD (30 rubric points — don't leave until last)
-- GitHub Actions workflow
-- Lint + test on every PR
-- Deploy pipeline (if applicable)
+### Integration Tests + CI/CD (don't leave until last — 30 rubric pts)
+- `server/tests/integration/` — auth flow, insights endpoint, orchestrator round-trip
+- GitHub Actions: lint + test on every PR
 
 ---
 
@@ -68,11 +93,11 @@ _Last updated: 2026-03-28_
 | Category | Points | Status |
 |---|---|---|
 | App quality (features, UX, functionality) | 50 | 5% done |
-| AI implementation (agents, orchestrator, judge) | 45 | 20% done (2/6 agents) |
-| Tech implementation (architecture, DB, auth) | 40 | 10% done |
+| AI implementation (agents, orchestrator, judge) | 45 | 55% done (2/6 agents + full orchestrator + judge) |
+| Tech implementation (architecture, DB, auth) | 40 | 15% done |
 | CI/CD + monitoring | 30 | 0% done |
 | Team collaboration | 20 | N/A |
-| Documentation | 15 | 60% done (PRD, session log, CLAUDE.md) |
+| Documentation | 15 | 65% done |
 
 ---
 
@@ -82,7 +107,7 @@ See `context/decisions.md` for full rationale. Short version:
 
 - **Pure agent functions** — agents receive data, return insights[], no side effects. Makes testing trivial.
 - **Promise.all orchestration** — all 6 agents run in parallel per insight request, not sequentially
-- **LLM-as-judge with scored dimensions** — judge receives structured JSON, scores on actionability/urgency/cross-domain relevance/confidence (not "rank these generically")
+- **LLM-as-judge with scored dimensions** — judge receives structured JSON, scores on actionability/urgency/crossDomainRelevance/confidence (not "rank these generically")
 - **SQL quarantine** — all queries in `server/db/queries.js`, never inline SQL elsewhere
 - **Paper trading only** — `ALPACA_PAPER=true` hardcoded, never exposed as a toggle
 
@@ -92,4 +117,4 @@ See `context/decisions.md` for full rationale. Short version:
 
 _Clear this section at the start of each session and replace with current work._
 
-**Session 2026-03-28:** Setting up project-memory structure, updating CLAUDE.md workflow, no code changes yet.
+**Session 2026-03-28 (complete):** OMC setup, project-memory structure, jest `--forceExit` fix, orchestrator/index.js (8 tests), orchestrator/judge.js (9 tests). 47/47 passing. Next: anomalyAgent.
