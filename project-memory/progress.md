@@ -4,7 +4,7 @@ _Last updated: 2026-03-28_
 
 ## Status: ~25% complete
 
-**Deadline: April 20, 2026** (CS 7180 Project 3 — 200 pts, 20% of final grade)
+**Deadline: April 21, 2026** (CS 7180 Project 3 — 200 pts, 20% of final grade)
 
 ---
 
