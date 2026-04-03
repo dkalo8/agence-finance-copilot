@@ -1,6 +1,6 @@
 # Batch Fixes Log
 
-One file per work session. Filename format: `YYYY-MM-DD-short-description.md`
+One file per meaningful work phase or achievement. Filename describes what was accomplished — not when.
 
 Each file documents:
 - What was worked on

@@ -1,8 +1,8 @@
 # Agence — Project Progress
 
-_Last updated: 2026-03-28_
+_Last updated: 2026-04-03_
 
-## Status: ~25% complete
+## Status: ~35% complete
 
 **Deadline: April 21, 2026** (CS 7180 Project 3 — 200 pts, 20% of final grade)
 
@@ -10,9 +10,11 @@ _Last updated: 2026-03-28_
 
 ## What's Built
 
-### Agents (2/6 complete)
+### Agents (4/6 complete)
 - `server/agents/spendingAgent.js` — categorized spending, MoM comparisons, budget flags. Pure function, fully tested (5 TDD cycles).
 - `server/agents/marketContextAgent.js` — Alpaca price quotes + Finnhub news sentiment per ticker. Pure function, fully tested (5 TDD cycles).
+- `server/agents/anomalyAgent.js` — large transaction detection (>$500) + duplicate charge detection. Pure function, fully tested (5 TDD cycles).
+- `server/agents/goalsAgent.js` — savings goal pace tracking; outputs goal_behind / goal_on_track / goal_no_contributions / goal_complete. Pure function, fully tested (5 TDD cycles).
 
 ### Orchestrator (complete)
 - `server/orchestrator/index.js` — `Promise.all` over all 6 agents, `safeRun` isolation (agent throws → empty array, no crash). Returns `{ spending, anomaly, goals, portfolio, market, autopilot }`. 8 tests.
@@ -28,7 +30,7 @@ _Last updated: 2026-03-28_
 - `project-memory/` — progress, context (harness design, decisions), batch-fixes log
 
 ### Test suite
-- **47/47 passing** across 4 test suites
+- **63/63 passing** across 6 test suites
 - Lint: clean
 
 ---
@@ -38,22 +40,12 @@ _Last updated: 2026-03-28_
 ### NEXT: Remaining 4 Agents
 Build each via TDD (red → green → commit). They are pure functions, zero external dependencies — fastest wins.
 
-1. **`server/agents/anomalyAgent.js`** ← IN PROGRESS (stub + tests scaffolded, implementation TODO)
-   - Input: `userData` (`{ transactions, balances }`)
-   - Output: `[{ type, message, severity, amount, merchant }]`
-   - Logic: flag transactions that are statistically unusual (large single charge, duplicate merchant, round-number amounts, new merchant category)
-
-2. **`server/agents/goalsAgent.js`** ← IN PROGRESS (stub + tests scaffolded, implementation TODO)
-   - Input: `userData` (`{ goals, transactions, balances }`)
-   - Output: `[{ type, goalName, message, pace, projectedDate }]`
-   - Logic: compare current savings pace vs goal target date, flag behind/on-track/ahead
-
-3. **`server/agents/portfolioAgent.js`**
+1. **`server/agents/portfolioAgent.js`** ← NEXT
    - Input: `marketData` (`{ positions, quotes }`)
    - Output: `[{ type, message, severity, ticker? }]`
    - Logic: concentration risk (any position > 20% of portfolio), unrealized P&L flags, cash drag
 
-4. **`server/agents/autopilotAgent.js`**
+2. **`server/agents/autopilotAgent.js`**
    - Input: `userData`, `marketData`
    - Output: `[{ type, action, ticker, quantity, reason }]`
    - Logic: rule-based paper trade signals (e.g. rebalance when concentration > threshold, buy on dip)
@@ -117,4 +109,4 @@ See `context/decisions.md` for full rationale. Short version:
 
 _Clear this section at the start of each session and replace with current work._
 
-**Session 2026-03-28 (complete):** OMC setup, project-memory structure, jest `--forceExit` fix, orchestrator/index.js (8 tests), orchestrator/judge.js (9 tests). 47/47 passing. Next: anomalyAgent.
+**Session 2026-04-03 (complete):** anomalyAgent + goalsAgent fully implemented (63/63 passing). HW5 /add-agent skill v1→v2, PostgreSQL MCP added, retrospective written. Root README.md created, batch-fixes log restructured. Next: portfolioAgent.
