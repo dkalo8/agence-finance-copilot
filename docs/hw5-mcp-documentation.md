@@ -1,4 +1,4 @@
-# 2026-04-02 — HW5: Custom Skill + MCP Integration
+# HW5: Custom Skill + MCP Integration
 
 ## What was done
 
