@@ -5,6 +5,16 @@ const authMiddleware = require('../middleware/auth');
 const plaidService = require('../services/plaid');
 const queries = require('../db/queries');
 
+// GET /api/v1/accounts — list connected accounts for user
+router.get('/', authMiddleware, async (req, res, next) => {
+  try {
+    const accounts = await queries.getAccountsByUserId(req.userId);
+    return res.status(200).json({ accounts });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // POST /api/v1/accounts/link-token
 router.post('/link-token', authMiddleware, async (req, res, next) => {
   try {

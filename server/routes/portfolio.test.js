@@ -104,14 +104,16 @@ describe('GET /api/v1/portfolio', () => {
     expect(res.body.cash).toBe(10000);
   });
 
-  test('returns 500 when Alpaca service throws', async () => {
+  test('returns 200 with empty positions when Alpaca service throws', async () => {
     alpacaService.getPositions.mockRejectedValue(new Error('Alpaca API error'));
-    alpacaService.getAccount.mockResolvedValue({ cash: '0', equity: '0' });
+    alpacaService.getAccount.mockRejectedValue(new Error('Alpaca API error'));
 
     const res = await request(app)
       .get('/api/v1/portfolio')
       .set('Authorization', `Bearer ${validToken}`);
 
-    expect(res.status).toBe(500);
+    expect(res.status).toBe(200);
+    expect(res.body.positions).toEqual([]);
+    expect(res.body.cash).toBe(0);
   });
 });

@@ -8,8 +8,8 @@ const alpacaService = require('../services/alpaca');
 router.get('/', authMiddleware, async (req, res, next) => {
   try {
     const [rawPositions, account] = await Promise.all([
-      alpacaService.getPositions(),
-      alpacaService.getAccount(),
+      alpacaService.getPositions().catch(() => []),
+      alpacaService.getAccount().catch(() => ({ cash: '0', equity: '0' })),
     ]);
 
     const positions = rawPositions.map(pos => ({

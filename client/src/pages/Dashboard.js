@@ -1,11 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import PlaidLink from '../components/PlaidLink';
+import api from '../api/client';
 
 export default function Dashboard() {
   const { logout } = useAuth();
   const [bankConnected, setBankConnected] = useState(false);
+
+  useEffect(() => {
+    api.get('/accounts')
+      .then(({ data }) => {
+        if (data.accounts && data.accounts.length > 0) setBankConnected(true);
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <div className="dashboard">
@@ -26,7 +35,7 @@ export default function Dashboard() {
             <PlaidLink onSuccess={() => setBankConnected(true)} />
           </div>
         )}
-        {bankConnected && <p style={{ color: '#16a34a', marginBottom: '1.5rem', fontWeight: 600 }}>Bank account connected!</p>}
+        {bankConnected && <p style={{ color: '#16a34a', marginBottom: '1.5rem', fontSize: '0.9rem' }}>✓ Bank account connected</p>}
         <div className="dashboard-cards">
           <Link to="/insights" className="card">
             <h3>AI Insights</h3>
