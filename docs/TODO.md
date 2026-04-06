@@ -81,7 +81,7 @@
 
 - [ ] Configure Playwright for E2E — at least 1 test for main user flow (login → see insights)
 - [ ] Enable Jest coverage reporting — enforce 70%+ threshold in CI
-- [ ] Add at least 3 integration tests (auth flow, insights endpoint, orchestrator round-trip)
+- [x] Add at least 3 integration tests (auth flow, insights endpoint) — 11 tests, 118/118 total
 
 ---
 

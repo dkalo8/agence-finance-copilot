@@ -58,8 +58,12 @@ _Last updated: 2026-04-06_
 - `client/vercel.json` — SPA rewrite rule for React Router
 - Render PostgreSQL (agence_db) — schema applied, SSL wired
 
+### Integration Tests (new)
+- `server/tests/integration/auth.integration.test.js` — 7 tests: register→login round-trip (real bcrypt + JWT), middleware rejection tests. Mocks only pg Pool.
+- `server/tests/integration/insights.integration.test.js` — 4 tests: full pipeline JWT→queries→orchestrator→judge. Mocks only pg Pool + orchestrator/judge.
+
 ### Test suite
-- **107/107 passing** across 12 test suites (server only)
+- **118/118 passing** across 14 test suites (server only)
 - Lint: clean
 - GitHub Actions: green ✅
 
@@ -132,10 +136,8 @@ _Last updated: 2026-04-06_
 
 _Clear this section at the start of each session and replace with current work._
 
-**Session 2026-04-06 (complete):**
-- Phase 4 (Claude Code features): settings.json hooks, .mcp.json, insight-reviewer agent, run-insights skill
-- Phase 5 (CI/CD): GitHub Actions 5-job pipeline (green on first run)
-- Deployment: Render (backend + PostgreSQL) + Vercel (frontend) both live and working
-- SSL fix for Render PostgreSQL connection
-- Auth (register/login) verified working end-to-end in production
-- Next: integration tests, remaining backend routes, CSS styling
+**Session 2026-04-06 (in progress):**
+- Phase 4 (Claude Code features): settings.json hooks, .mcp.json, insight-reviewer agent, run-insights skill ✅
+- Phase 5 (CI/CD): GitHub Actions 5-job pipeline (green), Render + Vercel deployed, pre-commit secrets detection ✅
+- Phase 6 (Testing): 11 integration tests added (118/118 total) ✅
+- Next: Jest coverage reporting, Playwright E2E, then Team Process (PRs/issues)
