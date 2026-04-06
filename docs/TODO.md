@@ -87,11 +87,11 @@
 
 ## Phase 7: Team Process / PRs (~4 hrs, +variable pts)
 
-- [ ] Enable branch-per-feature workflow — stop committing directly to main
-- [ ] Create GitHub Issues with acceptance criteria for remaining features
-- [ ] Open PRs for each feature, use writer/reviewer pattern
-- [ ] Document 2 sprints (planning + retrospective)
-- [ ] Add AI disclosure metadata to PRs
+- [x] Enable branch-per-feature workflow — CSS styling done via `feat/css-styling` branch
+- [x] Create GitHub Issues with acceptance criteria — Issues #1–#5 open
+- [x] Open PRs for each feature — PR #6 (CSS styling) merged
+- [x] Document 2 sprints (planning + retrospective) — `docs/sprint-1.md`, `docs/sprint-2.md`
+- [x] Add AI disclosure metadata to PRs — included in PR #6 body
 
 ---
 
