@@ -6,6 +6,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "jest --runInBand --forceExit",
+    "test:coverage": "jest --runInBand --forceExit --coverage",
     "test:watch": "jest --watch --runInBand --forceExit",
     "lint": "eslint . --ignore-pattern node_modules/"
   },
@@ -24,6 +25,16 @@
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.20.0",
     "plaid": "^41.4.0"
+  },
+  "jest": {
+    "coverageThreshold": {
+      "global": {
+        "statements": 70,
+        "branches": 70,
+        "functions": 70,
+        "lines": 70
+      }
+    }
   },
   "devDependencies": {
     "eslint": "^8.57.1",
