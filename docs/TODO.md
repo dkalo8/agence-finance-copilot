@@ -31,9 +31,9 @@
 - [x] Implement `server/middleware/errors.js` — centralized error handler
 - [x] Implement `server/index.js` — Express app, middleware mount, route registration
 - [x] Implement `server/routes/auth.js` — POST /api/v1/auth/register, /login
-- [ ] Implement `server/routes/accounts.js` — Plaid Link token + account sync
-- [ ] Implement `server/routes/portfolio.js` — Alpaca positions, P&L
-- [ ] Implement `server/routes/trades.js` — paper trade execution
+- [x] Implement `server/routes/accounts.js` — Plaid Link token + account sync
+- [x] Implement `server/routes/portfolio.js` — Alpaca positions, P&L
+- [x] Implement `server/routes/trades.js` — paper trade execution
 - [x] Implement `server/routes/insights.js` — GET /api/v1/insights (calls orchestrator → judge)
 - [x] Integration tests in `server/tests/integration/` — 11 tests (auth round-trip + insights pipeline)
 
@@ -43,10 +43,10 @@
 
 - [x] Set up React Router with protected routes
 - [x] Auth flow: login + register pages, JWT storage
-- [ ] Plaid Link component: connect bank account
+- [x] Plaid Link component: connect bank account
 - [x] Insights feed: display ranked insights from judge
-- [ ] Portfolio view: Alpaca positions + P&L
-- [ ] Goals tracker: create + track savings goals
+- [x] Portfolio view: Alpaca positions + P&L
+- [x] Goals tracker: create + track savings goals
 - [x] CSS / styling — dark nav, card layout, severity badges (PR #6, deployed to Vercel)
 
 ---

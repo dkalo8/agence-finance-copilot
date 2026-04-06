@@ -1,3 +1,41 @@
 'use strict';
+
 const router = require('express').Router();
+const authMiddleware = require('../middleware/auth');
+const alpacaService = require('../services/alpaca');
+const queries = require('../db/queries');
+
+// POST /api/v1/trades — submit a paper trade
+router.post('/', authMiddleware, async (req, res, next) => {
+  const { ticker, action, quantity } = req.body;
+
+  if (!ticker || !action || !quantity) {
+    return res.status(400).json({ error: 'ticker, action, and quantity are required' });
+  }
+  if (!['buy', 'sell'].includes(action)) {
+    return res.status(400).json({ error: 'action must be buy or sell' });
+  }
+
+  try {
+    const order = await alpacaService.placeOrder(ticker, action, quantity);
+    const price = parseFloat(order.filled_avg_price) || 0;
+
+    await queries.createTrade(req.userId, ticker, action, quantity, price, order.id);
+
+    return res.status(201).json({ orderId: order.id });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/v1/trades — trade history
+router.get('/', authMiddleware, async (req, res, next) => {
+  try {
+    const trades = await queries.getTradesByUserId(req.userId);
+    return res.status(200).json({ trades });
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;

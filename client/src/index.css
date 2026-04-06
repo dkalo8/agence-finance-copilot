@@ -343,6 +343,30 @@ a:hover { text-decoration: underline; }
 .loss { color: #dc2626; font-weight: 600; }
 
 /* ============================================================
+   Plaid Link button
+   ============================================================ */
+.plaid-link-btn {
+  padding: 0.6rem 1.25rem;
+  background: #0f172a;
+  color: #f1f5f9;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.plaid-link-btn:hover:not(:disabled) {
+  background: #1e293b;
+}
+
+.plaid-link-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================================
    Error / utility
    ============================================================ */
 .error {

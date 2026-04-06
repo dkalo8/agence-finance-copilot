@@ -21,4 +21,14 @@ async function getSnapshots(symbols) {
   return alpaca.getSnapshots(symbols);
 }
 
-module.exports = { getPositions, getAccount, getSnapshots };
+async function placeOrder(ticker, action, quantity) {
+  return alpaca.createOrder({
+    symbol: ticker,
+    qty: quantity,
+    side: action,
+    type: 'market',
+    time_in_force: 'day',
+  });
+}
+
+module.exports = { getPositions, getAccount, getSnapshots, placeOrder };
