@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import api from '../api/client';
+import AppNav from '../components/AppNav';
 
 export default function Goals() {
   const [goals, setGoals] = useState([]);
@@ -59,10 +59,7 @@ export default function Goals() {
 
   return (
     <div className="page">
-      <header className="nav">
-        <Link to="/">← Dashboard</Link>
-        <h2>Goals</h2>
-      </header>
+      <AppNav />
       <main>
         <h3 style={{ marginBottom: '1rem' }}>Add a Savings Goal</h3>
         <form onSubmit={handleSubmit} style={{ marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', maxWidth: 400 }}>

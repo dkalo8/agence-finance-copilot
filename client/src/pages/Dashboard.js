@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import PlaidLink from '../components/PlaidLink';
+import AppNav from '../components/AppNav';
 import api from '../api/client';
 
 export default function Dashboard() {
-  const { logout } = useAuth();
   const [bankConnected, setBankConnected] = useState(false);
 
   useEffect(() => {
@@ -18,15 +17,7 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard">
-      <header className="nav">
-        <h1>Agence</h1>
-        <nav>
-          <Link to="/insights">Insights</Link>
-          <Link to="/goals">Goals</Link>
-          <Link to="/portfolio">Portfolio</Link>
-          <button onClick={logout}>Sign out</button>
-        </nav>
-      </header>
+      <AppNav />
       <main>
         <h2>Welcome back</h2>
         <p>Your financial picture, in one place.</p>

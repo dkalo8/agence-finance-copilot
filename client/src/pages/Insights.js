@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import api from '../api/client';
+import AppNav from '../components/AppNav';
 
 const SEVERITY_COLOR = { high: '#e53e3e', medium: '#dd6b20', info: '#3182ce', low: '#38a169' };
 
@@ -18,10 +18,7 @@ export default function Insights() {
 
   return (
     <div className="page">
-      <header className="nav">
-        <Link to="/">← Dashboard</Link>
-        <h2>AI Insights</h2>
-      </header>
+      <AppNav />
       <main>
         {loading && <p>Analyzing your finances…</p>}
         {error && <p className="error">{error}</p>}
