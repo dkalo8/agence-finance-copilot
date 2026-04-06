@@ -1,6 +1,6 @@
 # Agence — P3 TODO Checklist
 
-**Deadline:** April 21, 2026 | **Points:** 200 | **Current estimate:** ~107/107 tests, ~60% complete
+**Deadline:** April 21, 2026 | **Points:** 200 | **Current estimate:** ~118/118 tests, ~77% complete
 
 > Ordered by dependency and rubric impact. Work top-to-bottom.
 
@@ -35,7 +35,7 @@
 - [ ] Implement `server/routes/portfolio.js` — Alpaca positions, P&L
 - [ ] Implement `server/routes/trades.js` — paper trade execution
 - [x] Implement `server/routes/insights.js` — GET /api/v1/insights (calls orchestrator → judge)
-- [ ] Integration tests in `server/tests/integration/` for auth + insights route
+- [x] Integration tests in `server/tests/integration/` — 11 tests (auth round-trip + insights pipeline)
 
 ---
 
@@ -47,7 +47,7 @@
 - [x] Insights feed: display ranked insights from judge
 - [ ] Portfolio view: Alpaca positions + P&L
 - [ ] Goals tracker: create + track savings goals
-- [ ] CSS / styling — make it look like a real product
+- [x] CSS / styling — dark nav, card layout, severity badges (PR #6, deployed to Vercel)
 
 ---
 
@@ -69,7 +69,7 @@
   - [x] Unit tests (Jest)
   - [x] Security scan (`npm audit`)
   - [x] AI PR review (`claude-code-action`)
-  - [ ] Integration tests (pending — test files not written yet)
+  - [x] Integration tests — wired into CI via `server-test` job (118/118)
 - [ ] Configure Vercel project — preview deploys on PR (blocked: dkalo8 GitHub can't link to existing Vercel account; CLI deploy working at https://agence-flame.vercel.app)
 - [x] Deploy backend API — Render (https://cs7180-project3-agence.onrender.com)
 - [x] Deploy frontend — Vercel (https://agence-flame.vercel.app)
@@ -97,7 +97,7 @@
 
 ## Phase 8: Documentation & Demo (~6 hrs, +10 pts)
 
-- [ ] Add Mermaid architecture diagram to README.md
+- [x] Add Mermaid architecture diagram to README.md
 - [ ] Write + publish blog post (Medium or dev.to) — 1,500+ words
 - [ ] Record 5–10 min screencast
 - [ ] Write 500-word individual reflection
@@ -109,10 +109,10 @@
 
 | Category | Max | Est. Now | Achievable |
 |---|---|---|---|
-| Application Quality | 40 | 15 | 35 (needs Plaid/Alpaca + styling + deploy) |
-| Claude Code Mastery | 55 | 25 | 45 (hooks + second skill + .mcp.json + agents) |
-| Testing & TDD | 30 | 22 | 27 (integration + E2E gap) |
-| CI/CD & Production | 35 | 0 | 30 (GitHub Actions + Vercel) |
-| Team Process | 25 | 5 | 20 (PRs + issues + sprint docs) |
-| Documentation & Demo | 15 | 5 | 13 (blog + video) |
-| **Total** | **200** | **~72** | **~170** |
+| Application Quality | 40 | 25 | 30 (Plaid/Alpaca routes still pending) |
+| Claude Code Mastery | 55 | 47 | 50 (2 skills, hooks, .mcp.json, agent, 6/6 agents) |
+| Testing & TDD | 30 | 28 | 28 (118 unit/integration + E2E + 95% coverage) |
+| CI/CD & Production | 35 | 30 | 32 (Actions + Vercel + Render + secrets; no GitHub auto-deploy) |
+| Team Process | 25 | 18 | 20 (Issues, PR, sprints, AI disclosure) |
+| Documentation & Demo | 15 | 5 | 13 (diagram done; blog + video pending) |
+| **Total** | **200** | **~153** | **~173** |
