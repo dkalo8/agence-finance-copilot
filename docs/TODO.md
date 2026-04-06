@@ -64,12 +64,12 @@
 
 ## Phase 5: CI/CD & Deployment (~20 hrs, +25 pts)
 
-- [ ] Create `.github/workflows/ci.yml` with stages:
-  - [ ] Lint (ESLint)
-  - [ ] Unit tests (Jest)
-  - [ ] Integration tests
-  - [ ] Security scan (`npm audit`)
-  - [ ] AI PR review (`claude-code-action`)
+- [x] Create `.github/workflows/ci.yml` with stages:
+  - [x] Lint (ESLint)
+  - [x] Unit tests (Jest)
+  - [x] Security scan (`npm audit`)
+  - [x] AI PR review (`claude-code-action`)
+  - [ ] Integration tests (pending — test files not written yet)
 - [ ] Configure Vercel project — preview deploys on PR, production on merge to main
 - [ ] Deploy backend API (Railway or Render)
 - [ ] Set up pre-commit secrets detection
