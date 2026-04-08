@@ -1,6 +1,6 @@
 # Agence — P3 TODO Checklist
 
-**Deadline:** April 21, 2026 | **Points:** 200 | **Current estimate:** ~118/118 tests, ~77% complete
+**Deadline:** April 21, 2026 | **Points:** 200 | **Current estimate:** ~173/173 tests, ~85% complete
 
 > Ordered by dependency and rubric impact. Work top-to-bottom.
 
@@ -23,7 +23,7 @@
 
 ---
 
-## Phase 2: Backend Wiring ✅ (core done, 3 routes pending)
+## Phase 2: Backend Wiring ✅
 
 - [x] Design DB schema: `users`, `accounts`, `goals`, `transactions`, `trades` tables
 - [x] Implement `server/db/queries.js` — all SQL here, PostgreSQL MCP for schema inspection
@@ -39,7 +39,7 @@
 
 ---
 
-## Phase 3: Frontend ✅ (scaffold done, polish pending)
+## Phase 3: Frontend ✅
 
 - [x] Set up React Router with protected routes
 - [x] Auth flow: login + register pages, JWT storage
@@ -51,7 +51,7 @@
 
 ---
 
-## Phase 4: Claude Code Features (~8 hrs, +10 pts) ✅
+## Phase 4: Claude Code Features ✅
 
 - [x] **Add a second custom skill** — `/run-insights` (`.claude/skills/run-insights/SKILL.md`)
 - [x] **Configure hooks in `.claude/settings.json`:**
@@ -62,89 +62,98 @@
 
 ---
 
-## Phase 5: CI/CD & Deployment (~20 hrs, +25 pts)
+## Phase 5: CI/CD & Deployment ✅
 
-- [x] Create `.github/workflows/ci.yml` with stages:
-  - [x] Lint (ESLint)
-  - [x] Unit tests (Jest)
-  - [x] Security scan (`npm audit`)
-  - [x] AI PR review (`claude-code-action`)
-  - [x] Integration tests — wired into CI via `server-test` job (118/118)
-- [ ] Configure Vercel project — preview deploys on PR (blocked: dkalo8 GitHub can't link to existing Vercel account; CLI deploy working at https://agence-flame.vercel.app)
+- [x] Create `.github/workflows/ci.yml` with stages: Lint, Unit tests, Security scan, AI PR review, Integration tests
+- [ ] Configure Vercel project — preview deploys on PR (blocked: dkalo8 GitHub can't link to existing Vercel account; CLI deploy working)
 - [x] Deploy backend API — Render (https://cs7180-project3-agence.onrender.com)
 - [x] Deploy frontend — Vercel (https://agence-flame.vercel.app)
 - [x] Set up pre-commit secrets detection — detect-secrets v1.5.0 + .secrets.baseline
 
 ---
 
-## Phase 6: Testing Gaps (~10 hrs, +5 pts)
+## Phase 6: Testing Gaps ✅
 
-- [x] Configure Playwright for E2E — 4/4 tests passing against live Vercel URL (`e2e/tests/auth-flow.spec.js`)
-- [x] Enable Jest coverage reporting — 70% threshold enforced in CI, ~95% actual
-- [x] Add at least 3 integration tests (auth flow, insights endpoint) — 11 tests, 118/118 total
+- [x] Configure Playwright for E2E — 4/4 tests passing against live Vercel URL
+- [x] Enable Jest coverage reporting — 70% threshold enforced in CI, ~89% actual
+- [x] Add at least 3 integration tests (auth flow, insights endpoint) — 11 tests, 173/173 total
 
 ---
 
-## Phase 7: Team Process / PRs (~4 hrs, +variable pts)
+## Phase 7: Team Process / PRs ✅
 
-- [x] Enable branch-per-feature workflow — CSS styling done via `feat/css-styling` branch
+- [x] Enable branch-per-feature workflow
 - [x] Create GitHub Issues with acceptance criteria — Issues #1–#5 open
 - [x] Open PRs for each feature — PR #6 (CSS styling) merged
 - [x] Document 2 sprints (planning + retrospective) — `docs/sprint-1.md`, `docs/sprint-2.md`
-- [x] Add AI disclosure metadata to PRs — included in PR #6 body
+- [x] Add AI disclosure metadata to PRs
 
 ---
 
-## Phase 9: UX/UI Polish (~12 hrs, +Application Quality pts)
+## Phase 8: UX/UI Polish & Features
 
-### 9A: Dashboard Redesign (Schwab-style)
-> Replace 3 redundant nav cards with a real financial summary dashboard
+### 8A: Dashboard Redesign ✅
+- [x] `GET /api/v1/portfolio/history` — Alpaca portfolio history, 1M/3M/6M/1Y
+- [x] Rewrite `Dashboard.js`: equity hero, Recharts AreaChart, accounts table, holdings, insights rail
+- [x] `PortfolioChart.js` with period selectors
 
-- [x] **Backend** — add `GET /api/v1/portfolio/history` route: calls Alpaca portfolio history endpoint, returns time-series data for chart (1M/3M/6M/1Y buckets)
-- [x] **Frontend** — rewrite `Dashboard.js`: Total Value headline, Day Change, portfolio P/L, sparkline chart (Recharts), accounts table (bank balance from Plaid + Alpaca equity/cash), top 3 insight cards (right rail), top holdings table
-- [x] **Frontend** — install Recharts (`npm install recharts`) and add `PortfolioChart.js` component with 1M/3M/6M/1Y time selectors
-- [x] **Test** — unit test `portfolio/history` route; verify chart renders with mock data (147/147 passing)
+### 8B: Expenses / Categories Page ✅
+- [x] `GET /api/v1/transactions` route
+- [x] `Expenses.js`: category bars + transaction table + period filter (All/1M/3M/6M/1Y)
 
-### 9B: Expenses / Categories Page
-> Show Plaid transactions grouped by category with MoM comparison
+### 8C: Watchlist ✅
+- [x] `watchlist` DB table via `migrate.js` (runs on startup)
+- [x] GET/POST/DELETE `/api/v1/watchlist`
+- [x] `watchlistAgent.js`: movers ≥3%, negative sentiment
+- [x] `Watchlist.js` page: add/remove tickers
 
-- [x] **Backend** — add `GET /api/v1/transactions` route: reads `getTransactionsByUserId()`, groups by category, computes MoM delta per category
-- [x] **Frontend** — new `Expenses.js` page: category breakdown (bar chart), transaction list with date/merchant/amount/category, date range filter (All/1M/3M/6M/1Y)
-- [x] **Frontend** — add `/expenses` link to `AppNav.js`
-- [x] **Test** — unit test groupBy/MoM logic; test route returns correct shape (152 tests)
+### 8D: AI Chat Assistant ✅
+- [x] `POST /api/v1/chat` — Claude Sonnet 4.6 with financial context injected
+- [x] `ChatWidget.js`: floating bottom-right FAB, markdown rendering (react-markdown + remark-gfm)
 
-### 9C: Watchlist
-> Let users add tickers to follow; agent analyzes them and surfaces insights
+### 8E: Bug Fixes (do first — unblock other features)
+> Bugs found during testing — fix before adding more features
 
-- [x] **Backend DB** — add `watchlist (id, user_id, ticker, added_at)` table via `server/db/migrate.js` (runs on startup)
-- [x] **Backend queries** — add `addToWatchlist()`, `getWatchlistByUserId()`, `removeFromWatchlist()` to `queries.js`
-- [x] **Backend routes** — new `server/routes/watchlist.js`: `GET /api/v1/watchlist`, `POST /api/v1/watchlist`, `DELETE /api/v1/watchlist/:ticker`; registered in `server/index.js`
-- [x] **Backend agent** — new `server/agents/watchlistAgent.js`: pure fn; flags movers ≥3%, negative sentiment, quiet tickers
-- [x] **Orchestrator** — added `watchlistAgent` to `Promise.all` (now 7 agents)
-- [x] **Frontend** — new `Watchlist.js` page: ticker input + Add, table with remove button, empty state
-- [x] **Frontend** — add `/watchlist` link to `AppNav.js`
-- [x] **Test** — TDD: 7 agent tests + 8 route tests (167 tests total)
+- [ ] **Portfolio trade error** — adding a stock returns an error in `Portfolio.js`; investigate `POST /api/v1/trades` and Alpaca paper trade execution; see `portfolio.png`
+- [ ] **Dashboard balance wiring** — after buying stock via Portfolio, dashboard should reflect updated equity, positions, and sparkline history; verify `GET /api/v1/portfolio` + `GET /api/v1/portfolio/history` re-fetch correctly after trade
 
-### 9D: AI Chat Assistant
-> Interactive financial Q&A powered by Claude — floating popup widget
+### 8F: Watchlist Real-Time Prices
+> Enrich watchlist with live Alpaca data
 
-- [x] **Backend** — new `server/routes/chat.js`: `POST /api/v1/chat` accepts `{ message, history[] }`; loads portfolio/accounts/goals/transactions; calls Claude Sonnet 4.6; returns `{ reply }`
-- [x] **Frontend** — `ChatWidget.js` component: floating bottom-right FAB, collapsible popup, user/assistant bubbles, "Analyzing..." state, persistent across navigation
-- [x] **Frontend** — ChatWidget rendered globally via `AuthShell` in `App.js` (shows on all authenticated pages)
-- [x] **Test** — 6 unit tests mocking Anthropic SDK (173 tests total)
+- [ ] **Backend** — `GET /api/v1/watchlist` response already has tickers; extend to include Alpaca snapshot price + 24h % change per ticker (reuse snapshot logic from `insights.js`)
+- [ ] **Frontend** — `Watchlist.js` table: show current price + 24h change column (green/red) next to each ticker; update on page load
 
-### 9E: Polish Pass
+### 8G: Polish Pass
 > Small improvements with high UX impact
 
 - [ ] **Trade history** — add trade history tab/table to `Portfolio.js` (calls existing `GET /api/v1/trades`)
-- [ ] **Empty states** — add empty state screens with CTAs: no transactions (→ connect bank), no positions (→ make first trade), no goals (→ create goal), no watchlist (→ add ticker)
-- [ ] **Settings page** — new `Settings.js`: view/reconnect Plaid account, display profile info (email), sign-out button
-- [ ] **Goal progress on dashboard** — show top active goal with inline progress bar in dashboard right rail (below insights)
-- [ ] **Responsive CSS** — ensure all pages usable on mobile viewport (768px breakpoints)
+- [ ] **Empty states** — Expenses (→ connect bank), Portfolio (→ make first trade), Goals (→ create goal), Watchlist (→ add ticker)
+- [ ] **Settings page** — new `Settings.js`: view/reconnect Plaid, display profile email, sign-out
+- [ ] **Goal progress on dashboard** — top active goal with progress bar in dashboard right rail (below insights)
+- [ ] **Responsive CSS** — all pages usable at 768px breakpoints
+
+### 8H: Aesthetic Redesign
+> Overhaul visual design from AI-generated HTML-y look to polished product UI.
+> Do this AFTER all features/fixes are complete — covers everything in one pass.
+
+- [ ] **Design system** — CSS variables for earthy dark palette (deep greens, warm near-black, amber accent), Google Fonts pairing (display serif + geometric sans), spacing/radius scale
+- [ ] **Global styles** — apply new tokens to nav, cards, buttons, inputs, badges, tables across all pages
+- [ ] **Page-by-page pass** — Dashboard, Insights, Expenses, Watchlist, Portfolio, Goals, Login/Register, ChatWidget
+- [ ] **Motion** — add subtle CSS transitions on cards, FAB hover, page reveals
+- [ ] Reference: `aesthetic-redesign.md` for full design mandate
+
+### 8I: Google Auth
+> Add Google OAuth sign-in alongside existing email/password.
+> Do AFTER aesthetic redesign so login page gets new styles applied once.
+
+- [ ] **Backend** — add Google OAuth strategy (Passport.js or direct token verify); new route `POST /api/v1/auth/google`; exchange Google ID token → issue JWT
+- [ ] **Frontend** — add "Sign in with Google" button to Login + Register pages; use `@react-oauth/google` or similar
+- [ ] **DB** — `users` table: add `google_id` column (nullable) via migration
+- [ ] **Test** — mock Google token verify in unit test; integration test verifies JWT returned
 
 ---
 
-## Phase 8: Documentation & Demo (~6 hrs, +10 pts)
+## Phase 9: Documentation & Demo (do last)
 
 - [x] Add Mermaid architecture diagram to README.md
 - [ ] Write + publish blog post (Medium or dev.to) — 1,500+ words
@@ -158,10 +167,10 @@
 
 | Category | Max | Est. Now | Achievable |
 |---|---|---|---|
-| Application Quality | 40 | 25 | 30 (Plaid/Alpaca routes still pending) |
-| Claude Code Mastery | 55 | 47 | 50 (2 skills, hooks, .mcp.json, agent, 6/6 agents) |
-| Testing & TDD | 30 | 28 | 28 (118 unit/integration + E2E + 95% coverage) |
-| CI/CD & Production | 35 | 30 | 32 (Actions + Vercel + Render + secrets; no GitHub auto-deploy) |
+| Application Quality | 40 | 30 | 38 (bug fixes + watchlist prices + polish + redesign) |
+| Claude Code Mastery | 55 | 47 | 50 (2 skills, hooks, .mcp.json, agent, 7/6 agents) |
+| Testing & TDD | 30 | 28 | 28 (173 unit/integration + E2E + 89% coverage) |
+| CI/CD & Production | 35 | 30 | 32 (Actions + Vercel + Render + secrets) |
 | Team Process | 25 | 18 | 20 (Issues, PR, sprints, AI disclosure) |
 | Documentation & Demo | 15 | 5 | 13 (diagram done; blog + video pending) |
-| **Total** | **200** | **~153** | **~173** |
+| **Total** | **200** | **~158** | **~181** |
