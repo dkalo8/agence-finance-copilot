@@ -657,6 +657,66 @@ a:hover { text-decoration: underline; }
 
 .muted { color: #94a3b8; font-size: 0.875rem; margin: 0.5rem 0; }
 
+/* ============================================================
+   Watchlist
+   ============================================================ */
+.watchlist-add-form {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.watchlist-input {
+  flex: 1;
+  max-width: 240px;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #0f172a;
+  background: #fff;
+  outline: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.watchlist-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+}
+
+.watchlist-add-btn {
+  padding: 0.55rem 1.1rem;
+  background: #0f172a;
+  color: #f1f5f9;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.watchlist-add-btn:hover:not(:disabled) { background: #1e293b; }
+.watchlist-add-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.watchlist-remove-btn {
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  color: #94a3b8;
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+  line-height: 1;
+}
+
+.watchlist-remove-btn:hover { border-color: #dc2626; color: #dc2626; }
+
 .empty-state {
   background: #fff;
   border: 1px solid #e2e8f0;

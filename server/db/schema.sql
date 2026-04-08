@@ -54,6 +54,15 @@ CREATE TABLE IF NOT EXISTS goals (
   created_at           TIMESTAMP DEFAULT NOW()
 );
 
+-- User watchlist tickers
+CREATE TABLE IF NOT EXISTS watchlist (
+  id       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id  UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  ticker   VARCHAR(20) NOT NULL,
+  added_at TIMESTAMP DEFAULT NOW(),
+  UNIQUE(user_id, ticker)
+);
+
 -- Paper trades executed via Alpaca
 CREATE TABLE IF NOT EXISTS trades (
   id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),

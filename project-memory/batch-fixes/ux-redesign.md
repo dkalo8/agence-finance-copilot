@@ -19,4 +19,7 @@
 - CRA proxy + Express CORS conflict in user's env (shell REACT_APP_API_URL interference)
 - All UI verification done on Vercel (agence-flame.vercel.app) + Render
 
+- Bug fixes: tx.date is full ISO string from DB → use new Date(tx.date); date display truncated to YYYY-MM-DD
+- Label fix: "This Month" → "1M". User added "1 Year" + spelled-out labels (1 Month / 3 Months / 6 Months / 1 Year).
+
 ## Next: 9C Watchlist, 9D AI Chat

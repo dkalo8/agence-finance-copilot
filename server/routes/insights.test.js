@@ -23,6 +23,8 @@ const validToken = jwt.sign({ userId: 'uuid-1' }, 'test-secret'); // pragma: all
 
 beforeEach(() => {
   jest.clearAllMocks();
+  // Default DB mocks
+  queries.getWatchlistByUserId.mockResolvedValue([]);
   // Default Alpaca mocks — no positions
   alpacaService.getPositions.mockResolvedValue([]);
   alpacaService.getAccount.mockResolvedValue({ cash: '1000', equity: '1000' });

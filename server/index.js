@@ -11,7 +11,9 @@ const tradesRouter = require('./routes/trades');
 const insightsRouter = require('./routes/insights');
 const goalsRouter = require('./routes/goals');
 const transactionsRouter = require('./routes/transactions');
+const watchlistRouter = require('./routes/watchlist');
 const errorHandler = require('./middleware/errors');
+const { runMigrations } = require('./db/migrate');
 
 const app = express();
 
@@ -41,6 +43,7 @@ app.use('/api/v1/trades', tradesRouter);
 app.use('/api/v1/insights', insightsRouter);
 app.use('/api/v1/goals', goalsRouter);
 app.use('/api/v1/transactions', transactionsRouter);
+app.use('/api/v1/watchlist', watchlistRouter);
 
 // Centralized error handler (must be last)
 app.use(errorHandler);
@@ -49,7 +52,11 @@ const PORT = process.env.PORT || 5000;
 
 /* istanbul ignore next */
 if (require.main === module) {
-  app.listen(PORT, () => console.log(`Agence server running on port ${PORT}`)); // eslint-disable-line no-console
+  runMigrations()
+    .catch(err => console.error('[migrate] failed:', err.message)) // eslint-disable-line no-console
+    .finally(() => {
+      app.listen(PORT, () => console.log(`Agence server running on port ${PORT}`)); // eslint-disable-line no-console
+    });
 }
 
 module.exports = app;

@@ -147,6 +147,35 @@ async function getTradesByUserId(userId) {
   return rows;
 }
 
+// ---------------------------------------------------------------------------
+// Watchlist
+// ---------------------------------------------------------------------------
+
+async function addToWatchlist(userId, ticker) {
+  const { rows } = await pool.query(
+    `INSERT INTO watchlist (user_id, ticker) VALUES ($1, $2)
+     ON CONFLICT (user_id, ticker) DO NOTHING
+     RETURNING id, ticker, added_at`,
+    [userId, ticker]
+  );
+  return rows[0] ?? null;
+}
+
+async function getWatchlistByUserId(userId) {
+  const { rows } = await pool.query(
+    'SELECT id, ticker, added_at FROM watchlist WHERE user_id = $1 ORDER BY added_at DESC',
+    [userId]
+  );
+  return rows;
+}
+
+async function removeFromWatchlist(userId, ticker) {
+  await pool.query(
+    'DELETE FROM watchlist WHERE user_id = $1 AND ticker = $2',
+    [userId, ticker]
+  );
+}
+
 module.exports = {
   createUser,
   getUserByEmail,
@@ -161,4 +190,7 @@ module.exports = {
   updateGoalCurrent,
   createTrade,
   getTradesByUserId,
+  addToWatchlist,
+  getWatchlistByUserId,
+  removeFromWatchlist,
 };

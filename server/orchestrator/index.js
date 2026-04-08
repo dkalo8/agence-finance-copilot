@@ -6,6 +6,7 @@ const goalsAgent = require('../agents/goalsAgent');
 const portfolioAgent = require('../agents/portfolioAgent');
 const marketContextAgent = require('../agents/marketContextAgent');
 const autopilotAgent = require('../agents/autopilotAgent');
+const watchlistAgent = require('../agents/watchlistAgent');
 
 /**
  * Runs all agents in parallel and returns their outputs keyed by agent name.
@@ -25,16 +26,17 @@ async function runOrchestrator(userData, marketData) {
     }
   };
 
-  const [spending, anomaly, goals, portfolio, market, autopilot] = await Promise.all([
+  const [spending, anomaly, goals, portfolio, market, autopilot, watchlist] = await Promise.all([
     safeRun(spendingAgent, userData),
     safeRun(anomalyAgent, userData),
     safeRun(goalsAgent, userData),
     safeRun(portfolioAgent, marketData),
     safeRun(marketContextAgent, marketData),
     safeRun(autopilotAgent, userData, marketData),
+    safeRun(watchlistAgent, userData, marketData),
   ]);
 
-  return { spending, anomaly, goals, portfolio, market, autopilot };
+  return { spending, anomaly, goals, portfolio, market, autopilot, watchlist };
 }
 
 module.exports = { runOrchestrator };
