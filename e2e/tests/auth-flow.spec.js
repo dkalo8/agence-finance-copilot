@@ -38,7 +38,8 @@ test.describe('Agence — main user flow', () => {
 
     // Wait for navigation away from /register — API call + redirect
     await page.waitForURL(/^(?!.*\/register).*$/, { timeout: 20000 });
-    await expect(page.locator('h2')).toContainText('Welcome back');
+    // Dashboard has no h2 — verify nav is visible (confirms authenticated state)
+    await expect(page.locator('.nav')).toBeVisible({ timeout: 5000 });
   });
 
   test('user can log in with valid credentials', async ({ page }) => {
@@ -50,7 +51,7 @@ test.describe('Agence — main user flow', () => {
     await page.getByRole('button', { name: 'Sign in' }).click();
 
     await page.waitForURL(/^(?!.*\/login).*$/, { timeout: 20000 });
-    await expect(page.locator('h2')).toContainText('Welcome back');
+    await expect(page.locator('.nav')).toBeVisible({ timeout: 5000 });
   });
 
   test('user can navigate to insights page after login', async ({ page }) => {

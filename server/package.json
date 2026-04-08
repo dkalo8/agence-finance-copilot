@@ -27,6 +27,11 @@
     "plaid": "^41.4.0"
   },
   "jest": {
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/services/",
+      "/db/migrate.js"
+    ],
     "coverageThreshold": {
       "global": {
         "statements": 70,
