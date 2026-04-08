@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 import api from '../api/client';
 
 export default function ChatWidget() {
@@ -51,7 +52,7 @@ export default function ChatWidget() {
             {messages.map((msg, i) => (
               <div key={i} className={`chat-bubble chat-bubble--${msg.role}`}>
                 <span className="chat-label">{msg.role === 'user' ? 'You' : 'Agence'}</span>
-                <p>{msg.content}</p>
+                <div className="chat-md"><ReactMarkdown>{msg.content}</ReactMarkdown></div>
               </div>
             ))}
             {loading && (
