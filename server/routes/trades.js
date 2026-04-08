@@ -24,6 +24,15 @@ router.post('/', authMiddleware, async (req, res, next) => {
 
     return res.status(201).json({ orderId: order.id });
   } catch (err) {
+    // Extract Alpaca's error message rather than forwarding upstream status codes
+    const alpacaMsg =
+      err.response?.data?.message ||
+      err.response?.data?.error ||
+      err.body?.message ||
+      null;
+    if (alpacaMsg) {
+      return res.status(422).json({ error: alpacaMsg });
+    }
     next(err);
   }
 });

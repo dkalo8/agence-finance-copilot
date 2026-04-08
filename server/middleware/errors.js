@@ -2,7 +2,8 @@
 
 // eslint-disable-next-line no-unused-vars
 function errorHandler(err, req, res, next) {
-  const status = err.status || 500;
+  // Only forward 4xx if explicitly set as an app-level error (not upstream API bleed-through)
+  const status = (err.status >= 400 && err.status < 500 && err.isOperational) ? err.status : 500;
   const message = err.message || 'Internal Server Error';
   res.status(status).json({ error: message });
 }
