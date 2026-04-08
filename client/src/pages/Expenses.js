@@ -27,7 +27,7 @@ function filterByMonths(transactions, months) {
   const cutoff = new Date();
   cutoff.setMonth(cutoff.getMonth() - months);
   cutoff.setHours(0, 0, 0, 0);
-  return transactions.filter(tx => new Date(tx.date + 'T00:00:00') >= cutoff);
+  return transactions.filter(tx => new Date(tx.date) >= cutoff);
 }
 
 function buildCategories(transactions) {
@@ -142,7 +142,7 @@ export default function Expenses() {
                   <tbody>
                     {filtered.map(tx => (
                       <tr key={tx.id}>
-                        <td className="tx-date">{tx.date}</td>
+                        <td className="tx-date">{String(tx.date).slice(0, 10)}</td>
                         <td>{tx.merchant_name || '—'}</td>
                         <td><span className="tx-category">{labelFor(tx.category)}</span></td>
                         <td className="right">${fmt(tx.amount)}</td>
