@@ -95,6 +95,55 @@
 
 ---
 
+## Phase 9: UX/UI Polish (~12 hrs, +Application Quality pts)
+
+### 9A: Dashboard Redesign (Schwab-style)
+> Replace 3 redundant nav cards with a real financial summary dashboard
+
+- [x] **Backend** — add `GET /api/v1/portfolio/history` route: calls Alpaca portfolio history endpoint, returns time-series data for chart (1M/3M/6M/1Y buckets)
+- [x] **Frontend** — rewrite `Dashboard.js`: Total Value headline, Day Change, portfolio P/L, sparkline chart (Recharts), accounts table (bank balance from Plaid + Alpaca equity/cash), top 3 insight cards (right rail), top holdings table
+- [x] **Frontend** — install Recharts (`npm install recharts`) and add `PortfolioChart.js` component with 1M/3M/6M/1Y time selectors
+- [x] **Test** — unit test `portfolio/history` route; verify chart renders with mock data (147/147 passing)
+
+### 9B: Expenses / Categories Page
+> Show Plaid transactions grouped by category with MoM comparison
+
+- [ ] **Backend** — add `GET /api/v1/transactions` route: reads `getTransactionsByUserId()`, groups by category, computes MoM delta per category
+- [ ] **Frontend** — new `Expenses.js` page: category breakdown (bar chart), transaction list with date/merchant/amount/category, date range filter (This Month / Last Month / 3 Months)
+- [ ] **Frontend** — add `/expenses` link to `AppNav.js`
+- [ ] **Test** — unit test groupBy/MoM logic; test route returns correct shape
+
+### 9C: Watchlist
+> Let users add tickers to follow; agent analyzes them and surfaces insights
+
+- [ ] **Backend DB** — add `watchlist (id, user_id, ticker, added_at)` table via migration script in `server/db/`
+- [ ] **Backend queries** — add `addToWatchlist()`, `getWatchlistByUserId()`, `removeFromWatchlist()` to `queries.js`
+- [ ] **Backend routes** — new `server/routes/watchlist.js`: `GET /api/v1/watchlist`, `POST /api/v1/watchlist`, `DELETE /api/v1/watchlist/:ticker`; register in `server/index.js`
+- [ ] **Backend agent** — new `server/agents/watchlistAgent.js`: pure fn `(userData, marketData) => insights[]`; fetches Alpaca snapshots + Finnhub sentiment for watched tickers; flags movers >3%, negative sentiment, etc.
+- [ ] **Orchestrator** — add `watchlistAgent` to `Promise.all` in `server/orchestrator/index.js`
+- [ ] **Frontend** — new `Watchlist.js` page: ticker input + Add button, list of watched tickers with price / 24h change / sentiment badge, remove button per row
+- [ ] **Frontend** — add `/watchlist` link to `AppNav.js`
+- [ ] **Test** — TDD: write watchlistAgent tests first, then implement; test all 3 route methods
+
+### 9D: AI Chat Assistant
+> Interactive financial Q&A powered by Claude, with user's financial context injected
+
+- [ ] **Backend** — new `server/routes/chat.js`: `POST /api/v1/chat` accepts `{ message, history[] }`; loads `userData` + `marketData`; calls Claude Sonnet 4.6 with system prompt injecting portfolio/balance/goals/transactions summary; returns `{ reply }`; register in `server/index.js`
+- [ ] **Frontend** — new `Chat.js` page: scrollable conversation thread, message input + send, assistant/user message styling, "Analyzing..." loading state
+- [ ] **Frontend** — add "Ask Agence" link to `AppNav.js`
+- [ ] **Test** — mock Anthropic call in unit test; integration test verifies route shape
+
+### 9E: Polish Pass
+> Small improvements with high UX impact
+
+- [ ] **Trade history** — add trade history tab/table to `Portfolio.js` (calls existing `GET /api/v1/trades`)
+- [ ] **Empty states** — add empty state screens with CTAs: no transactions (→ connect bank), no positions (→ make first trade), no goals (→ create goal), no watchlist (→ add ticker)
+- [ ] **Settings page** — new `Settings.js`: view/reconnect Plaid account, display profile info (email), sign-out button
+- [ ] **Goal progress on dashboard** — show top active goal with inline progress bar in dashboard right rail (below insights)
+- [ ] **Responsive CSS** — ensure all pages usable on mobile viewport (768px breakpoints)
+
+---
+
 ## Phase 8: Documentation & Demo (~6 hrs, +10 pts)
 
 - [x] Add Mermaid architecture diagram to README.md

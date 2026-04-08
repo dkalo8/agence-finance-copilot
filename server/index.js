@@ -14,7 +14,19 @@ const errorHandler = require('./middleware/errors');
 
 const app = express();
 
-app.use(cors());
+const ALLOWED_ORIGINS = [
+  'http://localhost:3000',
+  'https://agence-flame.vercel.app',
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // allow requests with no origin (curl, Postman, server-to-server)
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+    callback(new Error(`CORS: origin ${origin} not allowed`));
+  },
+  credentials: true,
+}));
 app.use(express.json());
 
 // Health check

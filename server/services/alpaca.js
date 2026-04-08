@@ -31,4 +31,9 @@ async function placeOrder(ticker, action, quantity) {
   });
 }
 
-module.exports = { getPositions, getAccount, getSnapshots, placeOrder };
+async function getPortfolioHistory(period = '1M') {
+  const alpacaPeriod = period === '1Y' ? '1A' : period;
+  return alpaca.getPortfolioHistory({ period: alpacaPeriod, timeframe: '1D' });
+}
+
+module.exports = { getPositions, getAccount, getSnapshots, placeOrder, getPortfolioHistory };

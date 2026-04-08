@@ -160,34 +160,232 @@ a:hover { text-decoration: underline; }
 }
 
 /* ============================================================
-   Dashboard
+   Dashboard — Schwab-style layout
    ============================================================ */
-.dashboard main {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 2rem 1.5rem;
-}
-
-.dashboard main h2 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #0f172a;
-  margin: 0 0 0.4rem;
-  letter-spacing: -0.02em;
-}
-
-.dashboard main > p {
+.dashboard-loading {
+  padding: 3rem 1.5rem;
   color: #64748b;
-  margin: 0 0 2rem;
   font-size: 0.95rem;
 }
 
-.dashboard-cards {
+.dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1rem;
+  grid-template-columns: 1fr 300px;
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  align-items: start;
 }
 
+.dashboard-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.dashboard-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Hero block */
+.dash-hero {
+  padding: 1.5rem 1.75rem;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+}
+
+.dash-hero-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.3rem;
+}
+
+.dash-hero-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.dash-hero-changes {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.dash-period-pl {
+  font-size: 0.85rem;
+}
+
+/* Sections */
+.dash-section {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+}
+
+.dash-section-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0f172a;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dash-section-link {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #3b82f6;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* Chart */
+.portfolio-chart-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.period-btns {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.period-btn {
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+
+.period-btn:hover { background: #f1f5f9; color: #0f172a; }
+.period-btn.active { background: #0f172a; color: #f1f5f9; border-color: #0f172a; }
+
+.chart-empty {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  font-size: 0.875rem;
+}
+
+.chart-tooltip {
+  background: #0f172a;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.chart-tooltip-date { font-size: 0.75rem; color: #94a3b8; margin-bottom: 0.15rem; }
+.chart-tooltip-value { font-size: 0.95rem; font-weight: 700; color: #f1f5f9; }
+
+/* Accounts table */
+.dash-accounts-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.dash-accounts-table th {
+  text-align: left;
+  padding: 0.4rem 0.5rem;
+  border-bottom: 2px solid #e2e8f0;
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.dash-accounts-table td {
+  padding: 0.6rem 0.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  color: #1e293b;
+}
+
+.dash-accounts-table td.right,
+.dash-accounts-table th.right,
+.positions-table td.right,
+.positions-table th.right {
+  text-align: right;
+}
+
+.dash-connect-bank {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f1f5f9;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.dash-connect-bank p { margin: 0 0 0.75rem; }
+
+/* Rail insights */
+.dash-insight-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.dash-insight-item {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+}
+
+.dash-insight-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+.dash-insight-msg {
+  font-size: 0.85rem;
+  color: #1e293b;
+  line-height: 1.45;
+}
+
+.dash-rail-loading,
+.dash-rail-empty {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.dash-empty {
+  color: #94a3b8;
+  font-size: 0.875rem;
+}
+
+.dash-empty p { margin: 0; }
+
+/* Cards (kept for possible reuse) */
 .card {
   background: #fff;
   border: 1px solid #e2e8f0;
@@ -204,19 +402,8 @@ a:hover { text-decoration: underline; }
   text-decoration: none;
 }
 
-.card h3 {
-  margin: 0 0 0.4rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #0f172a;
-}
-
-.card p {
-  margin: 0;
-  font-size: 0.85rem;
-  color: #64748b;
-  line-height: 1.5;
-}
+.card h3 { margin: 0 0 0.4rem; font-size: 1rem; font-weight: 600; color: #0f172a; }
+.card p  { margin: 0; font-size: 0.85rem; color: #64748b; line-height: 1.5; }
 
 /* ============================================================
    Inner pages (Insights, Goals, Portfolio)
@@ -378,9 +565,15 @@ a:hover { text-decoration: underline; }
 /* ============================================================
    Responsive
    ============================================================ */
-@media (max-width: 480px) {
-  .dashboard-cards {
+@media (max-width: 768px) {
+  .dashboard-grid {
     grid-template-columns: 1fr;
+    padding: 1rem;
   }
+  .dash-hero-value { font-size: 1.9rem; }
+}
+
+@media (max-width: 480px) {
   .nav { padding: 0 1rem; }
+  .portfolio-summary { flex-wrap: wrap; }
 }

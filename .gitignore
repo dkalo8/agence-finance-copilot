@@ -18,6 +18,7 @@ TODO-post-p3.md
 hw5-retrospective.md
 screenshots/
 original-proposal.md
+*.png
 
 # OMC runtime state (session scratch, not project code)
 .omc/

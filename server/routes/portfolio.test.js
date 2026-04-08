@@ -117,3 +117,60 @@ describe('GET /api/v1/portfolio', () => {
     expect(res.body.cash).toBe(0);
   });
 });
+
+// ---------------------------------------------------------------------------
+// GET /api/v1/portfolio/history
+// ---------------------------------------------------------------------------
+describe('GET /api/v1/portfolio/history', () => {
+  test('returns 401 without a token', async () => {
+    const res = await request(app).get('/api/v1/portfolio/history');
+    expect(res.status).toBe(401);
+  });
+
+  test('returns history array with correct shape', async () => {
+    alpacaService.getPortfolioHistory.mockResolvedValue({
+      timestamp: [1700000000, 1700086400],
+      equity: [10000, 10150],
+      profit_loss: [0, 150],
+      profit_loss_pct: [0, 0.015],
+      base_value: 10000,
+    });
+
+    const res = await request(app)
+      .get('/api/v1/portfolio/history?period=1M')
+      .set('Authorization', `Bearer ${validToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.history).toHaveLength(2);
+    expect(res.body.history[0]).toMatchObject({ equity: 10000, pl: 0, plPct: 0 });
+    expect(res.body.baseValue).toBe(10000);
+  });
+
+  test('returns empty history when Alpaca throws', async () => {
+    alpacaService.getPortfolioHistory.mockRejectedValue(new Error('Alpaca error'));
+
+    const res = await request(app)
+      .get('/api/v1/portfolio/history')
+      .set('Authorization', `Bearer ${validToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.history).toEqual([]);
+    expect(res.body.baseValue).toBe(0);
+  });
+
+  test('defaults to 1M when period param is invalid', async () => {
+    alpacaService.getPortfolioHistory.mockResolvedValue({
+      timestamp: [1700000000],
+      equity: [10000],
+      profit_loss: [0],
+      profit_loss_pct: [0],
+      base_value: 10000,
+    });
+
+    await request(app)
+      .get('/api/v1/portfolio/history?period=invalid')
+      .set('Authorization', `Bearer ${validToken}`);
+
+    expect(alpacaService.getPortfolioHistory).toHaveBeenCalledWith('1M');
+  });
+});
