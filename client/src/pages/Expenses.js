@@ -23,13 +23,26 @@ function fmt(n) {
 }
 
 function filterByMonths(transactions, months) {
+  if (months === 0) return transactions;
   const cutoff = new Date();
   cutoff.setMonth(cutoff.getMonth() - months);
   cutoff.setHours(0, 0, 0, 0);
   return transactions.filter(tx => new Date(tx.date + 'T00:00:00') >= cutoff);
 }
 
+function buildCategories(transactions) {
+  const groups = {};
+  for (const tx of transactions) {
+    const cat = tx.category || 'OTHER';
+    groups[cat] = (groups[cat] || 0) + parseFloat(tx.amount);
+  }
+  return Object.entries(groups)
+    .map(([name, total]) => ({ name, total: parseFloat(total.toFixed(2)) }))
+    .sort((a, b) => b.total - a.total);
+}
+
 const MONTH_OPTIONS = [
+  { label: 'All',        value: 0 },
   { label: 'This Month', value: 1 },
   { label: '3 Months',   value: 3 },
   { label: '6 Months',   value: 6 },
@@ -37,8 +50,7 @@ const MONTH_OPTIONS = [
 
 export default function Expenses() {
   const [allTransactions, setAllTransactions] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [months, setMonths] = useState(1);
+  const [months, setMonths] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -46,14 +58,14 @@ export default function Expenses() {
     api.get('/transactions')
       .then(({ data }) => {
         setAllTransactions(data.transactions || []);
-        setCategories(data.categories || []);
       })
       .catch(() => setError('Could not load transactions.'))
       .finally(() => setLoading(false));
   }, []);
 
   const filtered = filterByMonths(allTransactions, months);
-  const maxCategoryTotal = Math.max(...categories.map(c => c.currentTotal), 1);
+  const categories = buildCategories(filtered);
+  const maxCategoryTotal = Math.max(...categories.map(c => c.total), 1);
 
   return (
     <div className="page">
@@ -91,24 +103,17 @@ export default function Expenses() {
               <h3 className="dash-section-title">Spending by Category</h3>
               <div className="category-bars">
                 {categories
-                  .filter(c => c.currentTotal > 0)
+                  .filter(c => c.total > 0)
                   .map(cat => (
                     <div key={cat.name} className="category-bar-row">
                       <div className="category-bar-label">
                         <span>{labelFor(cat.name)}</span>
-                        <span className="category-bar-totals">
-                          ${fmt(cat.currentTotal)}
-                          {cat.momDelta !== 0 && (
-                            <span className={cat.momDelta > 0 ? 'loss' : 'gain'} style={{ marginLeft: '0.4rem', fontSize: '0.78rem' }}>
-                              {cat.momDelta > 0 ? '↑' : '↓'} ${fmt(cat.momDelta)} MoM
-                            </span>
-                          )}
-                        </span>
+                        <span className="category-bar-totals">${fmt(cat.total)}</span>
                       </div>
                       <div className="category-bar-track">
                         <div
                           className="category-bar-fill"
-                          style={{ width: `${(cat.currentTotal / maxCategoryTotal) * 100}%` }}
+                          style={{ width: `${(cat.total / maxCategoryTotal) * 100}%` }}
                         />
                       </div>
                     </div>
