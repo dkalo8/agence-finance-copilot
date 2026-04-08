@@ -130,14 +130,8 @@ _Last updated: 2026-04-06_
 
 ## Active Session Notes
 
-_Clear this section at the start of each session and replace with current work._
-
-**Session 2026-04-06 (continued):**
-- Phase 4 (Claude Code features): settings.json hooks, .mcp.json, insight-reviewer agent, run-insights skill ✅
-- Phase 5 (CI/CD): GitHub Actions 5-job pipeline (green), Render + Vercel deployed, pre-commit secrets detection ✅
-- Phase 6 (Testing): integration tests, Jest coverage (70% threshold), Playwright E2E (4/4) ✅
-- Phase 7 (Team Process): 5 GitHub Issues, CSS PR #6 merged, sprint-1.md + sprint-2.md ✅
-- Backend routes complete: accounts.js, portfolio.js, trades.js, goals.js + Plaid/Alpaca services ✅
-- Frontend complete: PlaidLink component, Goals.js with progress bars, Portfolio.js ✅
-- Test suite: 143/143, 18 suites, lint clean ✅
-- Phase 8 Documentation & Demo — remaining (user handles blog/screencast/reflection)
+**Session 2026-04-08:**
+- 9A Dashboard redesign ✅ — Schwab-style 2-col layout, Recharts AreaChart, holdings, insights rail. 147 tests.
+- 9B Expenses page ✅ — category bars + tx table, client-side grouping, "All" default. 152 tests.
+- Local dev CORS unresolved — UI verified on Vercel only.
+- Next: 9C Watchlist → 9D AI Chat → 9E Polish
