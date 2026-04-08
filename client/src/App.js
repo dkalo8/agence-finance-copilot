@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { useAuth } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
+import ChatWidget from './components/ChatWidget';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -9,8 +11,13 @@ import Goals from './pages/Goals';
 import Portfolio from './pages/Portfolio';
 import Expenses from './pages/Expenses';
 import Watchlist from './pages/Watchlist';
-import Chat from './pages/Chat';
 import './App.css';
+
+// Renders ChatWidget only when authenticated — must be inside AuthProvider
+function AuthShell() {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? <ChatWidget /> : null;
+}
 
 export default function App() {
   return (
@@ -25,9 +32,9 @@ export default function App() {
           <Route path="/portfolio" element={<PrivateRoute><Portfolio /></PrivateRoute>} />
           <Route path="/expenses" element={<PrivateRoute><Expenses /></PrivateRoute>} />
           <Route path="/watchlist" element={<PrivateRoute><Watchlist /></PrivateRoute>} />
-          <Route path="/chat" element={<PrivateRoute><Chat /></PrivateRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        <AuthShell />
       </BrowserRouter>
     </AuthProvider>
   );

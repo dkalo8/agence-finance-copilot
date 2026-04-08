@@ -108,30 +108,30 @@
 ### 9B: Expenses / Categories Page
 > Show Plaid transactions grouped by category with MoM comparison
 
-- [ ] **Backend** — add `GET /api/v1/transactions` route: reads `getTransactionsByUserId()`, groups by category, computes MoM delta per category
-- [ ] **Frontend** — new `Expenses.js` page: category breakdown (bar chart), transaction list with date/merchant/amount/category, date range filter (This Month / Last Month / 3 Months)
-- [ ] **Frontend** — add `/expenses` link to `AppNav.js`
-- [ ] **Test** — unit test groupBy/MoM logic; test route returns correct shape
+- [x] **Backend** — add `GET /api/v1/transactions` route: reads `getTransactionsByUserId()`, groups by category, computes MoM delta per category
+- [x] **Frontend** — new `Expenses.js` page: category breakdown (bar chart), transaction list with date/merchant/amount/category, date range filter (All/1M/3M/6M/1Y)
+- [x] **Frontend** — add `/expenses` link to `AppNav.js`
+- [x] **Test** — unit test groupBy/MoM logic; test route returns correct shape (152 tests)
 
 ### 9C: Watchlist
 > Let users add tickers to follow; agent analyzes them and surfaces insights
 
-- [ ] **Backend DB** — add `watchlist (id, user_id, ticker, added_at)` table via migration script in `server/db/`
-- [ ] **Backend queries** — add `addToWatchlist()`, `getWatchlistByUserId()`, `removeFromWatchlist()` to `queries.js`
-- [ ] **Backend routes** — new `server/routes/watchlist.js`: `GET /api/v1/watchlist`, `POST /api/v1/watchlist`, `DELETE /api/v1/watchlist/:ticker`; register in `server/index.js`
-- [ ] **Backend agent** — new `server/agents/watchlistAgent.js`: pure fn `(userData, marketData) => insights[]`; fetches Alpaca snapshots + Finnhub sentiment for watched tickers; flags movers >3%, negative sentiment, etc.
-- [ ] **Orchestrator** — add `watchlistAgent` to `Promise.all` in `server/orchestrator/index.js`
-- [ ] **Frontend** — new `Watchlist.js` page: ticker input + Add button, list of watched tickers with price / 24h change / sentiment badge, remove button per row
-- [ ] **Frontend** — add `/watchlist` link to `AppNav.js`
-- [ ] **Test** — TDD: write watchlistAgent tests first, then implement; test all 3 route methods
+- [x] **Backend DB** — add `watchlist (id, user_id, ticker, added_at)` table via `server/db/migrate.js` (runs on startup)
+- [x] **Backend queries** — add `addToWatchlist()`, `getWatchlistByUserId()`, `removeFromWatchlist()` to `queries.js`
+- [x] **Backend routes** — new `server/routes/watchlist.js`: `GET /api/v1/watchlist`, `POST /api/v1/watchlist`, `DELETE /api/v1/watchlist/:ticker`; registered in `server/index.js`
+- [x] **Backend agent** — new `server/agents/watchlistAgent.js`: pure fn; flags movers ≥3%, negative sentiment, quiet tickers
+- [x] **Orchestrator** — added `watchlistAgent` to `Promise.all` (now 7 agents)
+- [x] **Frontend** — new `Watchlist.js` page: ticker input + Add, table with remove button, empty state
+- [x] **Frontend** — add `/watchlist` link to `AppNav.js`
+- [x] **Test** — TDD: 7 agent tests + 8 route tests (167 tests total)
 
 ### 9D: AI Chat Assistant
-> Interactive financial Q&A powered by Claude, with user's financial context injected
+> Interactive financial Q&A powered by Claude — floating popup widget
 
-- [ ] **Backend** — new `server/routes/chat.js`: `POST /api/v1/chat` accepts `{ message, history[] }`; loads `userData` + `marketData`; calls Claude Sonnet 4.6 with system prompt injecting portfolio/balance/goals/transactions summary; returns `{ reply }`; register in `server/index.js`
-- [ ] **Frontend** — new `Chat.js` page: scrollable conversation thread, message input + send, assistant/user message styling, "Analyzing..." loading state
-- [ ] **Frontend** — add "Ask Agence" link to `AppNav.js`
-- [ ] **Test** — mock Anthropic call in unit test; integration test verifies route shape
+- [x] **Backend** — new `server/routes/chat.js`: `POST /api/v1/chat` accepts `{ message, history[] }`; loads portfolio/accounts/goals/transactions; calls Claude Sonnet 4.6; returns `{ reply }`
+- [x] **Frontend** — `ChatWidget.js` component: floating bottom-right FAB, collapsible popup, user/assistant bubbles, "Analyzing..." state, persistent across navigation
+- [x] **Frontend** — ChatWidget rendered globally via `AuthShell` in `App.js` (shows on all authenticated pages)
+- [x] **Test** — 6 unit tests mocking Anthropic SDK (173 tests total)
 
 ### 9E: Polish Pass
 > Small improvements with high UX impact
