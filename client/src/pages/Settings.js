@@ -7,14 +7,66 @@ export default function Settings() {
   const { logout } = useAuth();
   const [profile, setProfile] = useState(null);
   const [accounts, setAccounts] = useState([]);
+  const [household, setHousehold] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    Promise.all([
+  // Create household form
+  const [hhName, setHhName] = useState('');
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState('');
+
+  // Invite form
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviting, setInviting] = useState(false);
+  const [inviteMsg, setInviteMsg] = useState('');
+  const [inviteError, setInviteError] = useState('');
+
+  function fetchAll() {
+    return Promise.all([
       api.get('/auth/me').then(({ data }) => setProfile(data)).catch(() => {}),
       api.get('/accounts').then(({ data }) => setAccounts(data.accounts || [])).catch(() => {}),
+      api.get('/household').then(({ data }) => setHousehold(data.household)).catch(() => {}),
     ]).finally(() => setLoading(false));
-  }, []);
+  }
+
+  useEffect(() => { fetchAll(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function handleCreateHousehold(e) {
+    e.preventDefault();
+    setCreateError('');
+    if (!hhName.trim()) { setCreateError('Name required'); return; }
+    setCreating(true);
+    try {
+      const { data } = await api.post('/household', { name: hhName.trim() });
+      setHousehold(data.household);
+      setHhName('');
+    } catch (err) {
+      setCreateError(err.response?.data?.error || 'Failed to create household');
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  async function handleInvite(e) {
+    e.preventDefault();
+    setInviteError('');
+    setInviteMsg('');
+    if (!inviteEmail.trim()) { setInviteError('Email required'); return; }
+    setInviting(true);
+    try {
+      await api.post('/household/invite', { email: inviteEmail.trim() });
+      setInviteMsg(`Invited ${inviteEmail.trim()}`);
+      setInviteEmail('');
+      // Refresh household to show new member
+      api.get('/household').then(({ data }) => setHousehold(data.household)).catch(() => {});
+    } catch (err) {
+      setInviteError(err.response?.data?.error || 'Failed to invite');
+    } finally {
+      setInviting(false);
+    }
+  }
+
+  const isOwner = household?.members?.some(m => m.role === 'owner' && m.user_id === profile?.id);
 
   return (
     <div className="page">
@@ -44,6 +96,83 @@ export default function Settings() {
             </table>
           </section>
         )}
+
+        {/* Household */}
+        <section className="expenses-section" style={{ marginBottom: '1.5rem' }}>
+          <h3 className="dash-section-title">Household</h3>
+
+          {!loading && !household && (
+            <div>
+              <p className="muted" style={{ marginBottom: '0.75rem' }}>
+                No household yet. Create one to share your financial dashboard with a partner.
+              </p>
+              <form onSubmit={handleCreateHousehold} style={{ display: 'flex', gap: '0.5rem', maxWidth: 360 }}>
+                <input
+                  placeholder="Household name (e.g. The Smiths)"
+                  value={hhName}
+                  onChange={e => setHhName(e.target.value)}
+                  style={{ flex: 1 }}
+                />
+                <button
+                  type="submit"
+                  disabled={creating}
+                  style={{ padding: '0.5rem 1rem', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer' }}
+                >
+                  {creating ? 'Creating…' : 'Create'}
+                </button>
+              </form>
+              {createError && <p className="error" style={{ marginTop: '0.4rem' }}>{createError}</p>}
+            </div>
+          )}
+
+          {household && (
+            <div>
+              <p style={{ marginBottom: '0.75rem' }}>
+                <strong>{household.name}</strong>
+              </p>
+              <table className="tx-table" style={{ marginBottom: '1rem' }}>
+                <thead>
+                  <tr>
+                    <th>Member</th>
+                    <th>Role</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(household.members || []).map(m => (
+                    <tr key={m.user_id}>
+                      <td>{m.email}</td>
+                      <td style={{ color: m.role === 'owner' ? '#3b82f6' : '#64748b', textTransform: 'capitalize' }}>{m.role}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {isOwner && (
+                <div>
+                  <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '0.5rem' }}>Invite a partner by email:</p>
+                  <form onSubmit={handleInvite} style={{ display: 'flex', gap: '0.5rem', maxWidth: 360 }}>
+                    <input
+                      type="email"
+                      placeholder="partner@example.com"
+                      value={inviteEmail}
+                      onChange={e => setInviteEmail(e.target.value)}
+                      style={{ flex: 1 }}
+                    />
+                    <button
+                      type="submit"
+                      disabled={inviting}
+                      style={{ padding: '0.5rem 1rem', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer' }}
+                    >
+                      {inviting ? 'Inviting…' : 'Invite'}
+                    </button>
+                  </form>
+                  {inviteMsg && <p style={{ color: '#16a34a', marginTop: '0.4rem', fontSize: '0.85rem' }}>{inviteMsg}</p>}
+                  {inviteError && <p className="error" style={{ marginTop: '0.4rem' }}>{inviteError}</p>}
+                </div>
+              )}
+            </div>
+          )}
+        </section>
 
         {/* Linked bank accounts */}
         <section className="expenses-section" style={{ marginBottom: '1.5rem' }}>

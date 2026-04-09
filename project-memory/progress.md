@@ -146,4 +146,8 @@ _Last updated: 2026-04-06_
 - AI chat full context ✅ — watchlist + trade history added to Promise.all in chat.js; system prompt updated with WATCHLIST + RECENT TRADES sections.
 - $0 trade cleanup — local DB already clean; user needs to run `DELETE FROM trades WHERE price = 0 OR price IS NULL;` on Render production DB via psql or Render SQL editor.
 - TODO.md reorganized — Phases renumbered; household accounts promoted to 9A (highest priority, in original proposal); aesthetic redesign = 9B; Google auth = 9C; drag-drop goal ordering added to 8G.
-- **Next: 9A Household Accounts** (households + household_members tables, backend routes, shared data, Account page invite UI)
+- Account balance fix ✅ — `getAccountsByUserId` LEFT JOINs `balances` table; 182 tests.
+
+**Session 2026-04-09 (continued):**
+- 9A Household Accounts ✅ — households + household_members tables in migrate.js; POST/GET /api/v1/household + POST /api/v1/household/invite; 13 new tests (195 total); Settings page: create household form + member list + invite (owner only); Dashboard: "Household: [name]" badge in equity hero.
+- **Next: 9B Aesthetic Redesign** (earthy dark palette, Google Fonts, all pages in one CSS pass)

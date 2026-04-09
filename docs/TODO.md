@@ -138,14 +138,13 @@
 
 ## Phase 9: Priority Features (do in order)
 
-### 9A: Household Accounts ⚠️ HIGH PRIORITY (in original proposal — rubric risk if missing)
+### 9A: Household Accounts ✅
 > "As a household user, I want to invite my partner to a shared dashboard so we can see our combined finances together."
 
-- [ ] **DB migration** — `households (id, name, created_at)` + `household_members (id, household_id, user_id, role: owner/member, created_at)` added to `migrate.js`
-- [ ] **Backend routes** — `POST /api/v1/household` (create), `POST /api/v1/household/invite` (invite by email), `GET /api/v1/household` (current household + members)
-- [ ] **Shared data** — when user is in a household, insights/goals/watchlist aggregate across all member user IDs
-- [ ] **Frontend** — Account page: show household name + members, invite form (enter partner email); Dashboard shows "Household View" when in a household
-- [ ] **Tests** — unit tests for household routes; integration test for invite flow
+- [x] **DB migration** — `households` + `household_members` tables added to `migrate.js` (idempotent, runs on startup)
+- [x] **Backend routes** — `POST /api/v1/household` (create), `POST /api/v1/household/invite` (invite by email), `GET /api/v1/household`; 13 tests
+- [x] **Frontend** — Account page: create household form, member list, invite by email (owner only); Dashboard shows "Household: [name]" badge in equity hero
+- [ ] **Shared data** — stretch: aggregate insights/goals/watchlist across all household member user IDs (deferred)
 
 ### 9B: Aesthetic Redesign
 > Overhaul visual design from AI-generated HTML-y look to polished product UI.

@@ -42,6 +42,7 @@ export default function Dashboard() {
   const [insights, setInsights] = useState([]);
   const [insightsLoading, setInsightsLoading] = useState(true);
   const [topGoal, setTopGoal] = useState(null);
+  const [household, setHousehold] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // Load portfolio + accounts in parallel on mount
@@ -50,12 +51,14 @@ export default function Dashboard() {
       api.get('/portfolio').catch(() => null),
       api.get('/accounts').catch(() => null),
       api.get('/goals').catch(() => null),
-    ]).then(([portfolioRes, accountsRes, goalsRes]) => {
+      api.get('/household').catch(() => null),
+    ]).then(([portfolioRes, accountsRes, goalsRes, householdRes]) => {
       if (portfolioRes) setPortfolio(portfolioRes.data);
       if (accountsRes?.data?.accounts?.length > 0) setBankConnected(true);
       const goals = goalsRes?.data?.goals || [];
       const active = goals.filter(g => parseFloat(g.current) < parseFloat(g.target));
       if (active.length > 0) setTopGoal(active[0]);
+      if (householdRes?.data?.household) setHousehold(householdRes.data.household);
       setLoading(false);
     });
 
@@ -107,7 +110,14 @@ export default function Dashboard() {
 
           {/* Hero: total value + changes */}
           <section className="dash-hero">
-            <div className="dash-hero-label">Investment Portfolio</div>
+            <div className="dash-hero-label">
+              Investment Portfolio
+              {household && (
+                <span style={{ marginLeft: '0.6rem', fontSize: '0.75rem', background: '#1e3a5f', color: '#93c5fd', borderRadius: 999, padding: '0.15rem 0.6rem', fontWeight: 600 }}>
+                  Household: {household.name}
+                </span>
+              )}
+            </div>
             <div className="dash-hero-value">
               {equity != null ? `$${fmt(equity)}` : '--'}
             </div>

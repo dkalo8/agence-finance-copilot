@@ -180,6 +180,49 @@ async function removeFromWatchlist(userId, ticker) {
   );
 }
 
+// ---------------------------------------------------------------------------
+// Households
+// ---------------------------------------------------------------------------
+
+async function createHousehold(name) {
+  const { rows } = await pool.query(
+    'INSERT INTO households (name) VALUES ($1) RETURNING id, name, created_at',
+    [name]
+  );
+  return rows[0];
+}
+
+async function addHouseholdMember(householdId, userId, role) {
+  const { rows } = await pool.query(
+    `INSERT INTO household_members (household_id, user_id, role)
+     VALUES ($1, $2, $3)
+     ON CONFLICT (household_id, user_id) DO NOTHING
+     RETURNING *`,
+    [householdId, userId, role]
+  );
+  return rows[0];
+}
+
+async function getHouseholdByUserId(userId) {
+  const { rows } = await pool.query(
+    `SELECT h.id, h.name, h.created_at,
+            json_agg(json_build_object(
+              'user_id', u.id,
+              'email', u.email,
+              'role', hm.role
+            ) ORDER BY hm.created_at) AS members
+     FROM household_members hm
+     JOIN households h ON h.id = hm.household_id
+     JOIN users u ON u.id = hm.user_id
+     WHERE hm.household_id = (
+       SELECT household_id FROM household_members WHERE user_id = $1 LIMIT 1
+     )
+     GROUP BY h.id, h.name, h.created_at`,
+    [userId]
+  );
+  return rows[0] || null;
+}
+
 module.exports = {
   createUser,
   getUserByEmail,
@@ -197,4 +240,7 @@ module.exports = {
   addToWatchlist,
   getWatchlistByUserId,
   removeFromWatchlist,
+  createHousehold,
+  addHouseholdMember,
+  getHouseholdByUserId,
 };
