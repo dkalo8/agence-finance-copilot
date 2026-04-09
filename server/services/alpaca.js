@@ -4,7 +4,7 @@ const Alpaca = require('@alpacahq/alpaca-trade-api');
 
 // ALPACA_PAPER is always true — paper trading only, never real money
 const alpaca = new Alpaca({
-  keyId: process.env.ALPACA_KEY_ID,
+  keyId: process.env.ALPACA_KEY_ID || process.env.ALPACA_API_KEY,
   secretKey: process.env.ALPACA_SECRET_KEY,
   paper: true,
   baseUrl: 'https://paper-api.alpaca.markets',
