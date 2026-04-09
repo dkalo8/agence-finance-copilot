@@ -126,12 +126,14 @@
 ### 8G: Polish Pass
 > Small improvements with high UX impact
 
-- [ ] **Trade history** — add trade history tab/table to `Portfolio.js` (calls existing `GET /api/v1/trades`)
-- [ ] **Order types** — trade form currently hardcodes `market`; add stop/limit/market selector + conditionally show limit_price / stop_price fields
-- [ ] **Empty states** — Expenses (→ connect bank), Portfolio (→ make first trade), Goals (→ create goal), Watchlist (→ add ticker)
-- [ ] **Settings page** — new `Settings.js`: view/reconnect Plaid, display profile email, sign-out
-- [ ] **Goal progress on dashboard** — top active goal with progress bar in dashboard right rail (below insights)
-- [ ] **Responsive CSS** — all pages usable at 768px breakpoints
+- [x] **Trade history** — Positions / Trade History tab toggle in `Portfolio.js`
+- [x] **Order types** — market/limit/stop/stop_limit selector; conditional limit_price + stop_price fields
+- [x] **Empty states** — all pages already had empty states; verified and kept
+- [x] **Account/Settings page** — `/settings` route: profile email (via `GET /api/v1/auth/me`), linked accounts, sign-out
+- [x] **Goal progress on dashboard** — top active goal with progress bar in right rail; "Create first goal →" when none exist
+- [ ] **Responsive CSS** — deferred until after 8H aesthetic redesign (redesign will redo CSS in one pass)
+- [ ] **Account selection** — if user has multiple Plaid accounts, allow switching active account on dashboard
+- [ ] **Investor risk profile** — settings field for risk tolerance (conservative/moderate/aggressive); feed into autopilot agent rules
 
 ### 8H: Aesthetic Redesign
 > Overhaul visual design from AI-generated HTML-y look to polished product UI.

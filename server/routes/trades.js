@@ -7,7 +7,7 @@ const queries = require('../db/queries');
 
 // POST /api/v1/trades — submit a paper trade
 router.post('/', authMiddleware, async (req, res, next) => {
-  const { ticker, action, quantity } = req.body;
+  const { ticker, action, quantity, orderType = 'market', limitPrice, stopPrice } = req.body;
 
   if (!ticker || !action || !quantity) {
     return res.status(400).json({ error: 'ticker, action, and quantity are required' });
@@ -15,9 +15,12 @@ router.post('/', authMiddleware, async (req, res, next) => {
   if (!['buy', 'sell'].includes(action)) {
     return res.status(400).json({ error: 'action must be buy or sell' });
   }
+  if (!['market', 'limit', 'stop', 'stop_limit'].includes(orderType)) {
+    return res.status(400).json({ error: 'orderType must be market, limit, stop, or stop_limit' });
+  }
 
   try {
-    const order = await alpacaService.placeOrder(ticker, action, quantity);
+    const order = await alpacaService.placeOrder(ticker, action, quantity, orderType, limitPrice, stopPrice);
     const price = parseFloat(order.filled_avg_price) || 0;
 
     await queries.createTrade(req.userId, ticker, action, quantity, price, order.id);

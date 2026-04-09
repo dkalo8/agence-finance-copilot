@@ -35,6 +35,27 @@ describe('POST /api/v1/trades', () => {
     expect(res.status).toBe(400);
   });
 
+  test('returns 400 when orderType is invalid', async () => {
+    const res = await request(app)
+      .post('/api/v1/trades')
+      .set('Authorization', `Bearer ${validToken}`)
+      .send({ ticker: 'AAPL', action: 'buy', quantity: 1, orderType: 'magic' });
+    expect(res.status).toBe(400);
+  });
+
+  test('passes orderType and limitPrice to placeOrder', async () => {
+    alpacaService.placeOrder.mockResolvedValue({ id: 'ord-1', filled_avg_price: '148.00' });
+    queries.createTrade.mockResolvedValue({});
+
+    const res = await request(app)
+      .post('/api/v1/trades')
+      .set('Authorization', `Bearer ${validToken}`)
+      .send({ ticker: 'AAPL', action: 'buy', quantity: 1, orderType: 'limit', limitPrice: 148 });
+
+    expect(res.status).toBe(201);
+    expect(alpacaService.placeOrder).toHaveBeenCalledWith('AAPL', 'buy', 1, 'limit', 148, undefined);
+  });
+
   test('returns 400 when action is not buy or sell', async () => {
     const res = await request(app)
       .post('/api/v1/trades')

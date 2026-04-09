@@ -41,6 +41,7 @@ export default function Dashboard() {
   const [bankConnected, setBankConnected] = useState(false);
   const [insights, setInsights] = useState([]);
   const [insightsLoading, setInsightsLoading] = useState(true);
+  const [topGoal, setTopGoal] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // Load portfolio + accounts in parallel on mount
@@ -48,9 +49,13 @@ export default function Dashboard() {
     Promise.all([
       api.get('/portfolio').catch(() => null),
       api.get('/accounts').catch(() => null),
-    ]).then(([portfolioRes, accountsRes]) => {
+      api.get('/goals').catch(() => null),
+    ]).then(([portfolioRes, accountsRes, goalsRes]) => {
       if (portfolioRes) setPortfolio(portfolioRes.data);
       if (accountsRes?.data?.accounts?.length > 0) setBankConnected(true);
+      const goals = goalsRes?.data?.goals || [];
+      const active = goals.filter(g => parseFloat(g.current) < parseFloat(g.target));
+      if (active.length > 0) setTopGoal(active[0]);
       setLoading(false);
     });
 
@@ -234,6 +239,39 @@ export default function Dashboard() {
               </ul>
             )}
           </section>
+          {/* Top Goal */}
+          {topGoal && (
+            <section className="dash-section" style={{ marginTop: '1rem' }}>
+              <h3 className="dash-section-title">
+                Top Goal
+                <Link to="/goals" className="dash-section-link">All goals →</Link>
+              </h3>
+              {(() => {
+                const current = parseFloat(topGoal.current) || 0;
+                const target = parseFloat(topGoal.target) || 1;
+                const pct = Math.min((current / target) * 100, 100);
+                return (
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.4rem' }}>
+                      <span style={{ fontWeight: 600 }}>{topGoal.name}</span>
+                      <span style={{ color: '#64748b' }}>${fmt(current)} / ${fmt(target)}</span>
+                    </div>
+                    <div style={{ background: '#e2e8f0', borderRadius: 999, height: 8, overflow: 'hidden' }}>
+                      <div style={{ width: `${pct}%`, background: '#3b82f6', height: '100%', borderRadius: 999, transition: 'width 0.3s' }} />
+                    </div>
+                    <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '0.3rem' }}>{pct.toFixed(0)}% complete</div>
+                  </div>
+                );
+              })()}
+            </section>
+          )}
+
+          {!topGoal && !loading && (
+            <section className="dash-section" style={{ marginTop: '1rem' }}>
+              <h3 className="dash-section-title">Savings Goals</h3>
+              <p className="dash-rail-empty"><Link to="/goals">Create your first goal →</Link></p>
+            </section>
+          )}
         </aside>
 
       </div>

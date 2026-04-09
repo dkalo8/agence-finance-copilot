@@ -4,6 +4,7 @@ const router = require('express').Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const queries = require('../db/queries');
+const authMiddleware = require('../middleware/auth');
 
 const SALT_ROUNDS = 10;
 
@@ -54,6 +55,17 @@ router.post('/login', async (req, res, next) => {
 
     const token = signToken(user.id);
     return res.status(200).json({ token, userId: user.id });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/v1/auth/me
+router.get('/me', authMiddleware, async (req, res, next) => {
+  try {
+    const user = await queries.getUserById(req.userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    return res.status(200).json({ email: user.email, createdAt: user.created_at });
   } catch (err) {
     next(err);
   }

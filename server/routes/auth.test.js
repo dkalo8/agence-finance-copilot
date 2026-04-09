@@ -101,3 +101,33 @@ describe('POST /api/v1/auth/login', () => {
     expect(res.status).toBe(400);
   });
 });
+
+// ---------------------------------------------------------------------------
+// GET /api/v1/auth/me
+// ---------------------------------------------------------------------------
+describe('GET /api/v1/auth/me', () => {
+  const jwt = require('jsonwebtoken');
+  const validToken = jwt.sign({ userId: 'uuid-1' }, 'test-secret');
+
+  test('returns 401 without token', async () => {
+    const res = await request(app).get('/api/v1/auth/me');
+    expect(res.status).toBe(401);
+  });
+
+  test('returns email and createdAt for authenticated user', async () => {
+    queries.getUserById.mockResolvedValue({ id: 'uuid-1', email: 'a@b.com', created_at: '2026-04-01' });
+    const res = await request(app)
+      .get('/api/v1/auth/me')
+      .set('Authorization', `Bearer ${validToken}`);
+    expect(res.status).toBe(200);
+    expect(res.body.email).toBe('a@b.com');
+  });
+
+  test('returns 404 when user not found', async () => {
+    queries.getUserById.mockResolvedValue(null);
+    const res = await request(app)
+      .get('/api/v1/auth/me')
+      .set('Authorization', `Bearer ${validToken}`);
+    expect(res.status).toBe(404);
+  });
+});

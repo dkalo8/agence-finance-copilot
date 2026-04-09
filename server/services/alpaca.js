@@ -27,14 +27,17 @@ async function getSnapshots(symbols) {
   return arr;
 }
 
-async function placeOrder(ticker, action, quantity) {
-  return alpaca.createOrder({
+async function placeOrder(ticker, action, quantity, orderType = 'market', limitPrice, stopPrice) {
+  const params = {
     symbol: ticker,
     qty: quantity,
     side: action,
-    type: 'market',
+    type: orderType,
     time_in_force: 'day',
-  });
+  };
+  if (limitPrice !== null && limitPrice !== undefined) params.limit_price = limitPrice;
+  if (stopPrice !== null && stopPrice !== undefined) params.stop_price = stopPrice;
+  return alpaca.createOrder(params);
 }
 
 async function getPortfolioHistory(period = '1M') {
