@@ -19,12 +19,14 @@ function anomalyAgent(userData) {
   // Flag large single transactions
   for (const tx of transactions) {
     if (tx.amount > LARGE_TRANSACTION_THRESHOLD) {
+      const name = tx.merchant_name || tx.merchant || 'unknown merchant';
       insights.push({
         type: 'large_transaction',
-        message: `Unusually large charge of $${tx.amount} at ${tx.merchant || 'unknown merchant'}`,
+        message: `Unusually large charge of $${tx.amount} at ${name}`,
         severity: 'high',
         amount: tx.amount,
-        merchant: tx.merchant || null,
+        txId: tx.id,
+        merchant: name,
       });
     }
   }
@@ -32,18 +34,20 @@ function anomalyAgent(userData) {
   // Flag duplicate charges: same merchant + same amount + same date
   const seen = new Map();
   for (const tx of transactions) {
-    const key = `${tx.merchant}|${tx.amount}|${tx.date}`;
+    const name = tx.merchant_name || tx.merchant || 'unknown merchant';
+    const key = `${name}|${tx.amount}|${tx.date}`;
     if (seen.has(key)) {
       const already = insights.some(
-        i => i.type === 'duplicate_charge' && i.merchant === tx.merchant && i.amount === tx.amount
+        i => i.type === 'duplicate_charge' && i.merchant === name && i.amount === tx.amount
       );
       if (!already) {
         insights.push({
           type: 'duplicate_charge',
-          message: `Possible duplicate charge of $${tx.amount} at ${tx.merchant || 'unknown merchant'}`,
+          message: `Possible duplicate charge of $${tx.amount} at ${name}`,
           severity: 'medium',
           amount: tx.amount,
-          merchant: tx.merchant || null,
+          txId: tx.id,
+          merchant: name,
         });
       }
     } else {
