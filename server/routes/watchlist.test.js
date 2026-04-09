@@ -8,11 +8,27 @@ const jwt = require('jsonwebtoken');
 const app = require('../index');
 
 jest.mock('../db/queries');
+jest.mock('../services/alpaca');
 const queries = require('../db/queries');
+const alpacaService = require('../services/alpaca');
 
 const validToken = jwt.sign({ userId: 'uuid-1' }, 'test-secret');
 
-beforeEach(() => jest.clearAllMocks());
+const SNAPSHOTS = {
+  AAPL: {
+    dailyBar: { c: 175.5 },
+    prevDailyBar: { c: 172.0 },
+  },
+  TSLA: {
+    dailyBar: { c: 260.0 },
+    prevDailyBar: { c: 265.0 },
+  },
+};
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  alpacaService.getSnapshots.mockResolvedValue(SNAPSHOTS);
+});
 
 const WATCHLIST = [
   { id: 'w1', ticker: 'AAPL', added_at: '2026-04-01T00:00:00.000Z' },
@@ -33,6 +49,41 @@ describe('GET /api/v1/watchlist', () => {
     expect(res.status).toBe(200);
     expect(res.body.watchlist).toHaveLength(2);
     expect(res.body.watchlist[0].ticker).toBe('AAPL');
+  });
+
+  test('enriches items with price and changePercent from snapshots', async () => {
+    queries.getWatchlistByUserId.mockResolvedValue(WATCHLIST);
+    const res = await request(app)
+      .get('/api/v1/watchlist')
+      .set('Authorization', `Bearer ${validToken}`);
+    expect(res.status).toBe(200);
+    const aapl = res.body.watchlist.find(w => w.ticker === 'AAPL');
+    expect(aapl.price).toBeCloseTo(175.5);
+    expect(aapl.changePercent).toBeCloseTo(2.03, 1); // (175.5 - 172) / 172 * 100
+    const tsla = res.body.watchlist.find(w => w.ticker === 'TSLA');
+    expect(tsla.changePercent).toBeLessThan(0); // price dropped
+  });
+
+  test('returns price null when snapshot unavailable', async () => {
+    queries.getWatchlistByUserId.mockResolvedValue(WATCHLIST);
+    alpacaService.getSnapshots.mockResolvedValue({}); // no data
+    const res = await request(app)
+      .get('/api/v1/watchlist')
+      .set('Authorization', `Bearer ${validToken}`);
+    expect(res.status).toBe(200);
+    expect(res.body.watchlist[0].price).toBeNull();
+    expect(res.body.watchlist[0].changePercent).toBeNull();
+  });
+
+  test('still returns watchlist when snapshots call fails', async () => {
+    queries.getWatchlistByUserId.mockResolvedValue(WATCHLIST);
+    alpacaService.getSnapshots.mockRejectedValue(new Error('Alpaca down'));
+    const res = await request(app)
+      .get('/api/v1/watchlist')
+      .set('Authorization', `Bearer ${validToken}`);
+    expect(res.status).toBe(200);
+    expect(res.body.watchlist).toHaveLength(2);
+    expect(res.body.watchlist[0].price).toBeNull();
   });
 });
 

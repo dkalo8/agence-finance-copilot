@@ -3,12 +3,32 @@
 const router = require('express').Router();
 const authMiddleware = require('../middleware/auth');
 const queries = require('../db/queries');
+const alpacaService = require('../services/alpaca');
 
 // GET /api/v1/watchlist
 router.get('/', authMiddleware, async (req, res, next) => {
   try {
     const watchlist = await queries.getWatchlistByUserId(req.userId);
-    return res.status(200).json({ watchlist });
+
+    if (watchlist.length === 0) {
+      return res.status(200).json({ watchlist });
+    }
+
+    const tickers = watchlist.map(w => w.ticker);
+    const snapshots = await alpacaService.getSnapshots(tickers).catch(() => ({}));
+
+    const enriched = watchlist.map(item => {
+      const snap = snapshots[item.ticker];
+      if (!snap) return { ...item, price: null, changePercent: null };
+      const dailyBar = snap.dailyBar || snap.DailyBar || {};
+      const prevBar = snap.prevDailyBar || snap.PrevDailyBar || {};
+      const price = parseFloat(dailyBar.c ?? dailyBar.ClosePrice ?? 0) || null;
+      const prevClose = parseFloat(prevBar.c ?? prevBar.ClosePrice ?? price);
+      const changePercent = prevClose > 0 ? ((price - prevClose) / prevClose) * 100 : null;
+      return { ...item, price, changePercent };
+    });
+
+    return res.status(200).json({ watchlist: enriched });
   } catch (err) {
     next(err);
   }

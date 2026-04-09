@@ -23,7 +23,7 @@ After deploying and testing the live app, several issues were discovered and fix
    - Added simple trade form (ticker, buy/sell, quantity) directly on Portfolio page
 
 ### API Keys Required in Render (set in production)
-- `ALPACA_KEY_ID` + `ALPACA_SECRET_KEY` — paper trading keys from alpaca.markets
+- `ALPACA_API_KEY` + `ALPACA_SECRET_KEY` — paper trading keys from paper.alpaca.markets (code reads `ALPACA_KEY_ID || ALPACA_API_KEY`)
 - `PLAID_CLIENT_ID` + `PLAID_SECRET` + `PLAID_ENV=sandbox` — from dashboard.plaid.com
 - `FINNHUB_API_KEY` — from finnhub.io
 

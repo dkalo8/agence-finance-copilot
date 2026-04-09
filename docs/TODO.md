@@ -115,7 +115,7 @@
 > Bugs found during testing — fix before adding more features
 
 - [x] **Portfolio trade error (431)** — fixed: trades route now surfaces Alpaca error message instead of forwarding upstream status codes; error handler no longer bleeds 3rd-party 4xx to client
-- [ ] **Trade "unauthorized"** — Alpaca returning 401 on paper trades; **not a code bug** — verify `ALPACA_KEY_ID` + `ALPACA_SECRET_KEY` env vars on Render dashboard match paper account credentials
+- [x] **Trade "unauthorized"** — root cause: Render env var named `ALPACA_API_KEY` but code read `ALPACA_KEY_ID`. Fixed: `alpaca.js` now falls back `ALPACA_KEY_ID || ALPACA_API_KEY`. Portfolio route `.catch()` fallbacks masked the auth failure on GET.
 - [ ] **Dashboard balance wiring** — after buying stock via Portfolio, dashboard should reflect updated equity, positions, and sparkline history; verify `GET /api/v1/portfolio` + `GET /api/v1/portfolio/history` re-fetch correctly after trade
 - [x] **AI chat full context** — chat route now loads watchlist + trade history alongside transactions/accounts/goals/positions; system prompt gives Claude complete visibility into all user data
 
@@ -129,6 +129,7 @@
 > Small improvements with high UX impact
 
 - [ ] **Trade history** — add trade history tab/table to `Portfolio.js` (calls existing `GET /api/v1/trades`)
+- [ ] **Order types** — trade form currently hardcodes `market`; add stop/limit/market selector + conditionally show limit_price / stop_price fields
 - [ ] **Empty states** — Expenses (→ connect bank), Portfolio (→ make first trade), Goals (→ create goal), Watchlist (→ add ticker)
 - [ ] **Settings page** — new `Settings.js`: view/reconnect Plaid, display profile email, sign-out
 - [ ] **Goal progress on dashboard** — top active goal with progress bar in dashboard right rail (below insights)

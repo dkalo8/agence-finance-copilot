@@ -87,26 +87,35 @@ export default function Watchlist() {
               <thead>
                 <tr>
                   <th>Ticker</th>
+                  <th className="right">Price</th>
+                  <th className="right">24h Change</th>
                   <th>Added</th>
                   <th className="right">Remove</th>
                 </tr>
               </thead>
               <tbody>
-                {watchlist.map(item => (
-                  <tr key={item.ticker}>
-                    <td><span className="ticker">{item.ticker}</span></td>
-                    <td className="tx-date">{String(item.added_at).slice(0, 10)}</td>
-                    <td className="right">
-                      <button
-                        className="watchlist-remove-btn"
-                        onClick={() => handleRemove(item.ticker)}
-                        title={`Remove ${item.ticker}`}
-                      >
-                        ×
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {watchlist.map(item => {
+                  const chg = item.changePercent;
+                  const chgColor = chg == null ? '' : chg >= 0 ? '#4caf82' : '#e05c5c';
+                  const chgLabel = chg == null ? '—' : `${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%`;
+                  return (
+                    <tr key={item.ticker}>
+                      <td><span className="ticker">{item.ticker}</span></td>
+                      <td className="right">{item.price != null ? `$${item.price.toFixed(2)}` : '—'}</td>
+                      <td className="right" style={{ color: chgColor, fontWeight: chg != null ? 600 : 'normal' }}>{chgLabel}</td>
+                      <td className="tx-date">{String(item.added_at).slice(0, 10)}</td>
+                      <td className="right">
+                        <button
+                          className="watchlist-remove-btn"
+                          onClick={() => handleRemove(item.ticker)}
+                          title={`Remove ${item.ticker}`}
+                        >
+                          ×
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
             <p className="muted" style={{ marginTop: '0.75rem', fontSize: '0.8rem' }}>
