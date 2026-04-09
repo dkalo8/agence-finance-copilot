@@ -132,7 +132,7 @@
 - [x] **Account/Settings page** — `/settings` route: profile email (via `GET /api/v1/auth/me`), linked accounts, sign-out
 - [x] **Goal progress on dashboard** — top active goal with progress bar in right rail; "Create first goal →" when none exist
 - [ ] **Responsive CSS** — deferred until after 8H aesthetic redesign (redesign will redo CSS in one pass)
-- [ ] **Account selection** — if user has multiple Plaid accounts, allow switching active account on dashboard
+- [ ] **Account selection** — if user has multiple Plaid or trading accounts (regular, IRA, 401k, etc.), allow switching active account on dashboard
 - [ ] **Investor risk profile** — settings field for risk tolerance (conservative/moderate/aggressive); feed into autopilot agent rules
 
 ### 8H: Aesthetic Redesign
