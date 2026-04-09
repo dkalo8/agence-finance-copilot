@@ -19,7 +19,12 @@ async function getAccount() {
 }
 
 async function getSnapshots(symbols) {
-  return alpaca.getSnapshots(symbols);
+  const arr = await alpaca.getSnapshots(symbols);
+  // SDK returns array [{symbol, dailyBar, ...}]; convert to {SYMBOL: snapshot} for keyed lookup
+  if (Array.isArray(arr)) {
+    return arr.reduce((acc, snap) => { acc[snap.symbol] = snap; return acc; }, {});
+  }
+  return arr;
 }
 
 async function placeOrder(ticker, action, quantity) {
