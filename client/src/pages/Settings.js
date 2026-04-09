@@ -37,9 +37,10 @@ export default function Settings() {
     if (!hhName.trim()) { setCreateError('Name required'); return; }
     setCreating(true);
     try {
-      const { data } = await api.post('/household', { name: hhName.trim() });
-      setHousehold(data.household);
+      await api.post('/household', { name: hhName.trim() });
       setHhName('');
+      const { data } = await api.get('/household');
+      setHousehold(data.household);
     } catch (err) {
       setCreateError(err.response?.data?.error || 'Failed to create household');
     } finally {
