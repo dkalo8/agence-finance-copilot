@@ -595,7 +595,7 @@ input, button, textarea, select {
   box-shadow: var(--shadow-card);
   padding: 1.1rem 1.4rem;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.85rem;
   transition: box-shadow var(--transition), transform var(--transition);
 }
@@ -794,6 +794,12 @@ input, button, textarea, select {
 .tx-table td.right, .tx-table th.right { text-align: right; }
 
 .tx-date { color: var(--text-muted); font-size: 0.82rem; white-space: nowrap; }
+
+@keyframes highlight-fade {
+  0%   { background: rgba(74, 111, 165, 0.18); }
+  100% { background: transparent; }
+}
+.tx-highlight { animation: highlight-fade 2.5s ease 0.2s forwards; }
 
 .tx-category {
   background: var(--navy-100);

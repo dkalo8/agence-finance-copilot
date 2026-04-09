@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import AppNav from '../components/AppNav';
 import api from '../api/client';
 
@@ -54,6 +55,9 @@ export default function Expenses() {
   const [months, setMonths] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const location = useLocation();
+  const highlightRef = useRef(null);
+  const highlightAmount = new URLSearchParams(location.search).get('amount');
 
   useEffect(() => {
     api.get('/transactions')
@@ -63,6 +67,12 @@ export default function Expenses() {
       .catch(() => setError('Could not load transactions.'))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (!loading && highlightRef.current) {
+      setTimeout(() => highlightRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+    }
+  }, [loading]);
 
   const filtered = filterByMonths(allTransactions, months);
   const categories = buildCategories(filtered);
@@ -141,14 +151,27 @@ export default function Expenses() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filtered.map(tx => (
-                      <tr key={tx.id}>
-                        <td className="tx-date">{String(tx.date).slice(0, 10)}</td>
-                        <td>{tx.merchant_name || '—'}</td>
-                        <td><span className="tx-category">{labelFor(tx.category)}</span></td>
-                        <td className="right">${fmt(tx.amount)}</td>
-                      </tr>
-                    ))}
+                    {(() => {
+                      let firstMatch = true;
+                      return filtered.map(tx => {
+                        const isMatch = highlightAmount != null &&
+                          Math.abs(parseFloat(tx.amount) - parseFloat(highlightAmount)) < 0.01;
+                        const setRef = isMatch && firstMatch;
+                        if (setRef) firstMatch = false;
+                        return (
+                          <tr
+                            key={tx.id}
+                            ref={setRef ? highlightRef : null}
+                            className={isMatch ? 'tx-highlight' : ''}
+                          >
+                            <td className="tx-date">{String(tx.date).slice(0, 10)}</td>
+                            <td>{tx.merchant_name || '—'}</td>
+                            <td><span className="tx-category">{labelFor(tx.category)}</span></td>
+                            <td className="right">${fmt(tx.amount)}</td>
+                          </tr>
+                        );
+                      });
+                    })()}
                   </tbody>
                 </table>
               )}

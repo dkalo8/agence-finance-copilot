@@ -38,7 +38,10 @@ export default function Insights() {
         )}
         <ul className="insight-list">
           {insights.map((insight, i) => {
-            const route = SOURCE_ROUTE[insight.source] || null;
+            const base = SOURCE_ROUTE[insight.source] || null;
+            const route = base && insight.amount != null
+              ? `${base}?amount=${insight.amount}`
+              : base;
             return (
               <li
                 key={i}
