@@ -14,6 +14,17 @@ async function runMigrations() {
 
   try {
     await pool.query(`
+      CREATE TABLE IF NOT EXISTS goals (
+        id                   UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id              UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        name                 VARCHAR(255) NOT NULL,
+        target               NUMERIC(10,2) NOT NULL,
+        current              NUMERIC(10,2) DEFAULT 0,
+        monthly_contribution NUMERIC(10,2) DEFAULT 0,
+        created_at           TIMESTAMP DEFAULT NOW()
+      )
+    `);
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS watchlist (
         id       UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         user_id  UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,

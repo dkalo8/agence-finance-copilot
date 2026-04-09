@@ -134,6 +134,7 @@
 - [ ] **Responsive CSS** — deferred until after 8H aesthetic redesign (redesign will redo CSS in one pass)
 - [ ] **Account selection** — if user has multiple Plaid or trading accounts (regular, IRA, 401k, etc.), allow switching active account on dashboard
 - [ ] **Investor risk profile** — settings field for risk tolerance (conservative/moderate/aggressive); feed into autopilot agent rules
+- [ ] **Goal types** — add `goal_type` column to goals table (savings/growth/speculation); display type badge and tailor pace/progress logic per type
 
 ### 8H: Aesthetic Redesign
 > Overhaul visual design from AI-generated HTML-y look to polished product UI.

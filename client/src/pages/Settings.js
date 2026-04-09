@@ -21,7 +21,7 @@ export default function Settings() {
       <AppNav />
       <main>
         <div className="page-header">
-          <h2>Account &amp; Settings</h2>
+          <h2>Account</h2>
         </div>
 
         {loading && <p className="muted">Loading…</p>}

@@ -15,7 +15,10 @@ const queries = require('../db/queries');
 
 const validToken = jwt.sign({ userId: 'uuid-1' }, 'test-secret');
 
-beforeEach(() => jest.clearAllMocks());
+beforeEach(() => {
+  jest.clearAllMocks();
+  alpacaService.getSnapshots.mockResolvedValue({});
+});
 
 // ---------------------------------------------------------------------------
 // POST /api/v1/trades
@@ -81,6 +84,24 @@ describe('POST /api/v1/trades', () => {
     expect(res.body).toHaveProperty('orderId', 'alpaca-order-123');
     expect(queries.createTrade).toHaveBeenCalledWith(
       'uuid-1', 'AAPL', 'buy', 5, 150.00, 'alpaca-order-123'
+    );
+  });
+
+  test('uses snapshot price when filled_avg_price is 0', async () => {
+    alpacaService.placeOrder.mockResolvedValue({ id: 'ord-snap', filled_avg_price: '0' });
+    alpacaService.getSnapshots.mockResolvedValue({
+      AAPL: { dailyBar: { c: 182.5 } },
+    });
+    queries.createTrade.mockResolvedValue({});
+
+    const res = await request(app)
+      .post('/api/v1/trades')
+      .set('Authorization', `Bearer ${validToken}`)
+      .send({ ticker: 'AAPL', action: 'buy', quantity: 1 });
+
+    expect(res.status).toBe(201);
+    expect(queries.createTrade).toHaveBeenCalledWith(
+      'uuid-1', 'AAPL', 'buy', 1, 182.5, 'ord-snap'
     );
   });
 

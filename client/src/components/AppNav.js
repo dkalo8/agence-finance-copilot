@@ -13,7 +13,7 @@ export default function AppNav({ title }) {
         <Link to="/watchlist">Watchlist</Link>
         <Link to="/goals">Goals</Link>
         <Link to="/portfolio">Portfolio</Link>
-        <Link to="/settings">Settings</Link>
+        <Link to="/settings">Account</Link>
         <button onClick={logout}>Sign out</button>
       </nav>
     </header>

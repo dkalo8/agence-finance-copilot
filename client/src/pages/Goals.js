@@ -61,7 +61,7 @@ export default function Goals() {
     <div className="page">
       <AppNav />
       <main>
-        <h3 style={{ marginBottom: '1rem' }}>Add a Savings Goal</h3>
+        <h3 style={{ marginBottom: '1rem' }}>Add a Goal</h3>
         <form onSubmit={handleSubmit} style={{ marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', maxWidth: 400 }}>
           <input
             placeholder="Goal name (e.g. Emergency Fund)"

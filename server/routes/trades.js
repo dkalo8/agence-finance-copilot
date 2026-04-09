@@ -21,7 +21,18 @@ router.post('/', authMiddleware, async (req, res, next) => {
 
   try {
     const order = await alpacaService.placeOrder(ticker, action, quantity, orderType, limitPrice, stopPrice);
-    const price = parseFloat(order.filled_avg_price) || 0;
+    let price = parseFloat(order.filled_avg_price) || 0;
+
+    // Paper market orders fill asynchronously — filled_avg_price is 0 at submission.
+    // Fall back to snapshot close price so trade history shows a real price.
+    if (price === 0) {
+      const snaps = await alpacaService.getSnapshots([ticker]).catch(() => ({}));
+      const snap = snaps[ticker];
+      if (snap) {
+        const bar = snap.dailyBar || snap.DailyBar || {};
+        price = parseFloat(bar.c ?? bar.ClosePrice ?? 0) || 0;
+      }
+    }
 
     await queries.createTrade(req.userId, ticker, action, quantity, price, order.id);
 
