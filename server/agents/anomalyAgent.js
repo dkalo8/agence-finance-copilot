@@ -55,6 +55,33 @@ function anomalyAgent(userData) {
     }
   }
 
+  // Flag repeated identical charges: same known merchant + same amount on different dates
+  const merchantAmountGroups = new Map();
+  for (const tx of transactions) {
+    const name = tx.merchant_name || tx.merchant;
+    if (!name) continue; // skip unknown-merchant txs — too noisy
+    const key = `${name}|${tx.amount}`;
+    if (!merchantAmountGroups.has(key)) merchantAmountGroups.set(key, []);
+    merchantAmountGroups.get(key).push(tx);
+  }
+
+  for (const [key, txs] of merchantAmountGroups) {
+    if (txs.length < 2) continue;
+    const dates = new Set(txs.map(tx => String(tx.date).slice(0, 10)));
+    if (dates.size < 2) continue; // all same date — already caught by duplicate check
+    const parts = key.split('|');
+    const name = parts[0];
+    const amount = parts[1];
+    insights.push({
+      type: 'repeated_charge',
+      message: `${txs.length} identical $${amount} charges from ${name} — possible recurring billing`,
+      severity: 'medium',
+      amount: parseFloat(amount),
+      txId: txs[0].id,
+      merchant: name,
+    });
+  }
+
   return insights;
 }
 
