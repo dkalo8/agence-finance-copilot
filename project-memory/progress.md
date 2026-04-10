@@ -1,8 +1,8 @@
 # Agence — Project Progress
 
-_Last updated: 2026-04-06_
+_Last updated: 2026-04-10_
 
-## Status: ~75% complete
+## Status: ~90% complete
 
 **Deadline: April 21, 2026** (CS 7180 Project 3 — 200 pts, 20% of final grade)
 
@@ -152,3 +152,11 @@ _Last updated: 2026-04-06_
 - 9A Household Accounts ✅ — households + household_members tables in migrate.js; POST/GET /api/v1/household + POST /api/v1/household/invite; 13 new tests (195 total); Settings page: create household form + member list + invite (owner only); Dashboard: "Household: [name]" badge in equity hero.
 - 9A part 2 ✅ — DELETE /household/leave + DELETE /household/member/:userId; shared data: goals/watchlist/transactions now aggregate across all household member IDs via `= ANY(uuid[])` queries; 203/203 tests.
 - **9A complete + committed. Tagged as `v1-pre-redesign` before 9B.**
+
+**Session 2026-04-10:**
+- 9B Aesthetic Redesign ✅ — full design system (CSS vars, Cormorant Garamond + Outfit fonts), page-by-page pass, severity badge redesign, motion animations, page title consistency. See `batch-fixes/9b-redesign-anomaly-caching.md`.
+- Insight cards deep-link navigation ✅ — orchestrator tags insights with `source`; Insights.js navigates to `?txId=` or `?amount=`; Expenses.js scrolls to + highlights matched row.
+- Anomaly agent improvements ✅ — `txId` on all insights, duplicate key fixed (amount+date only), `repeated_charge` detection added (same merchant+amount across different dates).
+- 8H Frontend Caching ✅ — `insightsCache.js` + `apiCache.js`; Dashboard pre-warms all 8 endpoints; all pages read from cache; mutations invalidate before re-fetch. 192/192 tests.
+- TODO.md restructured — remaining work in priority order: 9C Google Auth → 9D News/Watchlist → 9E Nav redesign → polish → Phase 10 docs.
+- **Next: 9C Google Auth**
