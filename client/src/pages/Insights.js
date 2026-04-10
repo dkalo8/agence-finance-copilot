@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api/client';
 import { getCachedInsights } from '../api/insightsCache';
 import AppNav from '../components/AppNav';
 

@@ -1,5 +1,3 @@
-'use strict';
-
 import api from './client';
 
 const CACHE_KEY = 'agence_insights';
