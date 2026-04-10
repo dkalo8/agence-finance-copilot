@@ -129,7 +129,6 @@
 - [x] **Goal progress on dashboard** — top active goal with progress bar in right rail
 - [ ] **Drag-and-drop goal ordering** — let user set goal priority via drag-and-drop on Goals page
 - [ ] **Dashboard balance wiring** — after buying stock, dashboard should reflect updated equity, positions, and sparkline; verify re-fetch after trade
-- [ ] **Dashboard percent-change zeros** — 24h change shows 0% across the board; likely because only brokerage equity is tracked, not the cash account; investigate Alpaca `/account` cash field + combine cash + equity into displayed total
 - [ ] **Responsive CSS** — deferred until after 9B aesthetic redesign (redesign will redo CSS in one pass)
 - [ ] **Account selection** — if user has multiple Plaid or trading accounts, allow switching active account on dashboard
 - [ ] **Investor risk profile** — settings field for risk tolerance (conservative/moderate/aggressive); feed into autopilot agent rules
