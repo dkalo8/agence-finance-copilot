@@ -3,8 +3,11 @@
 const router = require('express').Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { OAuth2Client } = require('google-auth-library');
 const queries = require('../db/queries');
 const authMiddleware = require('../middleware/auth');
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const SALT_ROUNDS = 10;
 
@@ -55,6 +58,46 @@ router.post('/login', async (req, res, next) => {
 
     const token = signToken(user.id);
     return res.status(200).json({ token, userId: user.id });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/v1/auth/google
+router.post('/google', async (req, res, next) => {
+  try {
+    const { credential } = req.body;
+    if (!credential) return res.status(400).json({ error: 'credential is required' });
+
+    let payload;
+    try {
+      const ticket = await googleClient.verifyIdToken({
+        idToken: credential,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+      payload = ticket.getPayload();
+    } catch {
+      return res.status(401).json({ error: 'Invalid Google token' });
+    }
+
+    const { sub: googleId, email } = payload;
+
+    // 1. Existing Google-linked account
+    let user = await queries.getUserByGoogleId(googleId);
+    if (user) {
+      return res.status(200).json({ token: signToken(user.id), userId: user.id });
+    }
+
+    // 2. Existing email/password account — link google_id
+    user = await queries.getUserByEmail(email);
+    if (user) {
+      await queries.linkGoogleId(user.id, googleId);
+      return res.status(200).json({ token: signToken(user.id), userId: user.id });
+    }
+
+    // 3. New user
+    user = await queries.createUserWithGoogle(email, googleId);
+    return res.status(200).json({ token: signToken(user.id), userId: user.id });
   } catch (err) {
     next(err);
   }

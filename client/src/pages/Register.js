@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/client';
 
@@ -23,6 +24,17 @@ export default function Register() {
       setError(err.response?.data?.error || 'Registration failed');
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleGoogleSuccess({ credential }) {
+    setError('');
+    try {
+      const { data } = await api.post('/auth/google', { credential });
+      login(data.token);
+      navigate('/');
+    } catch (err) {
+      setError(err.response?.data?.error || 'Google sign-in failed');
     }
   }
 
@@ -52,6 +64,14 @@ export default function Register() {
             {loading ? 'Creating account…' : 'Create account'}
           </button>
         </form>
+        <div className="auth-divider"><span>or</span></div>
+        <div className="auth-google">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => setError('Google sign-in failed')}
+            width="100%"
+          />
+        </div>
         <p>Already have an account? <Link to="/login">Sign in</Link></p>
       </div>
     </div>

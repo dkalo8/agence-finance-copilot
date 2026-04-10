@@ -105,6 +105,73 @@ describe('POST /api/v1/auth/login', () => {
 // ---------------------------------------------------------------------------
 // GET /api/v1/auth/me
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// POST /api/v1/auth/google
+// ---------------------------------------------------------------------------
+jest.mock('google-auth-library', () => {
+  const verifyIdToken = jest.fn();
+  return { OAuth2Client: jest.fn(() => ({ verifyIdToken })) };
+});
+
+describe('POST /api/v1/auth/google', () => {
+  let verifyIdToken;
+  beforeEach(() => {
+    const { OAuth2Client } = require('google-auth-library');
+    verifyIdToken = new OAuth2Client().verifyIdToken;
+    jest.clearAllMocks();
+  });
+
+  test('returns 400 when credential is missing', async () => {
+    const res = await request(app).post('/api/v1/auth/google').send({});
+    expect(res.status).toBe(400);
+  });
+
+  test('returns 401 when Google token is invalid', async () => {
+    verifyIdToken.mockRejectedValue(new Error('Invalid token'));
+    const res = await request(app).post('/api/v1/auth/google').send({ credential: 'bad-token' });
+    expect(res.status).toBe(401);
+  });
+
+  test('returns 200 and JWT when existing user signs in with Google', async () => {
+    verifyIdToken.mockResolvedValue({
+      getPayload: () => ({ sub: 'g-123', email: 'user@gmail.com' }),
+    });
+    queries.getUserByGoogleId.mockResolvedValue({ id: 'uuid-1', email: 'user@gmail.com' });
+
+    const res = await request(app).post('/api/v1/auth/google').send({ credential: 'valid-token' });
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('token');
+  });
+
+  test('creates new user when no matching account exists', async () => {
+    verifyIdToken.mockResolvedValue({
+      getPayload: () => ({ sub: 'g-456', email: 'new@gmail.com' }),
+    });
+    queries.getUserByGoogleId.mockResolvedValue(null);
+    queries.getUserByEmail.mockResolvedValue(null);
+    queries.createUserWithGoogle.mockResolvedValue({ id: 'uuid-2', email: 'new@gmail.com' });
+
+    const res = await request(app).post('/api/v1/auth/google').send({ credential: 'valid-token' });
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('token');
+    expect(queries.createUserWithGoogle).toHaveBeenCalledWith('new@gmail.com', 'g-456');
+  });
+
+  test('links google_id to existing email-password account on first Google sign-in', async () => {
+    verifyIdToken.mockResolvedValue({
+      getPayload: () => ({ sub: 'g-789', email: 'existing@gmail.com' }),
+    });
+    queries.getUserByGoogleId.mockResolvedValue(null);
+    queries.getUserByEmail.mockResolvedValue({ id: 'uuid-3', email: 'existing@gmail.com' });
+    queries.linkGoogleId.mockResolvedValue();
+
+    const res = await request(app).post('/api/v1/auth/google').send({ credential: 'valid-token' });
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('token');
+    expect(queries.linkGoogleId).toHaveBeenCalledWith('uuid-3', 'g-789');
+  });
+});
+
 describe('GET /api/v1/auth/me', () => {
   const jwt = require('jsonwebtoken');
   const validToken = jwt.sign({ userId: 'uuid-1' }, 'test-secret');

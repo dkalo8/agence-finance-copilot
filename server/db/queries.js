@@ -246,10 +246,33 @@ async function getHouseholdByUserId(userId) {
   return rows[0] || null;
 }
 
+async function getUserByGoogleId(googleId) {
+  const { rows } = await pool.query(
+    'SELECT id, email, created_at FROM users WHERE google_id = $1',
+    [googleId]
+  );
+  return rows[0] ?? null;
+}
+
+async function createUserWithGoogle(email, googleId) {
+  const { rows } = await pool.query(
+    'INSERT INTO users (email, google_id) VALUES ($1, $2) RETURNING id, email, created_at',
+    [email, googleId]
+  );
+  return rows[0];
+}
+
+async function linkGoogleId(userId, googleId) {
+  await pool.query('UPDATE users SET google_id = $1 WHERE id = $2', [googleId, userId]);
+}
+
 module.exports = {
   createUser,
   getUserByEmail,
   getUserById,
+  getUserByGoogleId,
+  createUserWithGoogle,
+  linkGoogleId,
   createAccount,
   getAccountsByUserId,
   upsertTransactions,

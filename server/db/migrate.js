@@ -50,6 +50,9 @@ async function runMigrations() {
         UNIQUE(household_id, user_id)
       )
     `);
+    // Google auth columns (idempotent)
+    await pool.query(`ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL`).catch(() => {});
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id VARCHAR(255) UNIQUE`);
     console.log('[migrate] schema up to date'); // eslint-disable-line no-console
   } finally {
     await pool.end();

@@ -229,6 +229,27 @@ input, button, textarea, select {
   text-align: center;
 }
 
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.25rem 0 1rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--navy-200);
+}
+
+.auth-google {
+  display: flex;
+  justify-content: center;
+}
+
 /* ============================================================
    Dashboard
    ============================================================ */
