@@ -4,6 +4,7 @@ const router = require('express').Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Resend } = require('resend');
+const nodemailer = require('nodemailer');
 const { OAuth2Client } = require('google-auth-library');
 const queries = require('../db/queries');
 const authMiddleware = require('../middleware/auth');
@@ -31,18 +32,37 @@ function verifyResetToken(token) {
 async function sendResetEmail(email, token) {
   const clientUrl = process.env.CLIENT_URL || 'https://agence-flame.vercel.app';
   const resetUrl = `${clientUrl}/reset-password?token=${token}`;
+  const html = `<p>Click <a href="${resetUrl}">here</a> to reset your Agence password. This link expires in 1 hour.</p><p>If you did not request this, you can ignore this email.</p>`;
 
-  if (!process.env.RESEND_API_KEY) {
-    console.log(`[dev] Password reset link for ${email}: ${resetUrl}`); // eslint-disable-line no-console
+  // Gmail SMTP via nodemailer (preferred — works for any recipient)
+  if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+    });
+    await transporter.sendMail({
+      from: `Agence <${process.env.SMTP_USER}>`,
+      to: email,
+      subject: 'Reset your Agence password',
+      html,
+    });
     return;
   }
-  const resend = new Resend(process.env.RESEND_API_KEY);
-  await resend.emails.send({
-    from: 'Agence <onboarding@resend.dev>',
-    to: email,
-    subject: 'Reset your Agence password',
-    html: `<p>Click <a href="${resetUrl}">here</a> to reset your Agence password. This link expires in 1 hour.</p><p>If you did not request this, you can ignore this email.</p>`,
-  });
+
+  // Resend fallback
+  if (process.env.RESEND_API_KEY) {
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    await resend.emails.send({
+      from: 'Agence <onboarding@resend.dev>',
+      to: email,
+      subject: 'Reset your Agence password',
+      html,
+    });
+    return;
+  }
+
+  // Dev fallback — log reset URL to console
+  console.log(`[dev] Password reset link for ${email}: ${resetUrl}`); // eslint-disable-line no-console
 }
 
 // POST /api/v1/auth/register
