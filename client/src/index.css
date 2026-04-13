@@ -1300,3 +1300,70 @@ input, button, textarea, select {
 }
 .chat-form button:hover:not(:disabled) { background: var(--navy-600); }
 .chat-form button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ============================================================
+   Responsive — additional rules (extends the blocks above)
+   ============================================================ */
+
+@media (max-width: 768px) {
+  /* Auth */
+  .auth-page { padding: 1.5rem 1rem; }
+  .auth-card { max-width: 100%; padding: 2rem 1.5rem; }
+
+  /* Page headers */
+  .page-header { flex-wrap: wrap; gap: 0.5rem; }
+  .page-header h2 { font-size: 1.6rem; }
+
+  /* Cards & sections */
+  .expenses-section { padding: 1.25rem 1.25rem; }
+  .dash-section     { padding: 1.25rem 1.25rem; }
+  .card             { padding: 1.25rem 1.25rem; }
+
+  /* Tables — make scrollable horizontally instead of overflowing */
+  .positions-table,
+  .tx-table,
+  .dash-accounts-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* News controls wrap to full row */
+  .news-controls { margin-left: 0; width: 100%; }
+  .news-search-input { flex: 1; width: auto; min-width: 0; }
+
+  /* Insight feed */
+  .insight-card { padding: 1rem 1.25rem; }
+}
+
+@media (max-width: 480px) {
+  /* Auth */
+  .auth-card { padding: 1.5rem 1.25rem; }
+  .auth-google { display: flex; justify-content: center; }
+
+  /* Page header */
+  .page-header { align-items: flex-start; }
+  .page-header h2 { font-size: 1.4rem; }
+
+  /* Watchlist add form — stack vertically */
+  .watchlist-add-form { flex-direction: column; align-items: stretch; gap: 0.5rem; }
+  .watchlist-input    { max-width: 100%; }
+
+  /* Chat widget */
+  .chat-widget { bottom: 1rem; right: 1rem; }
+  .chat-popup  { width: calc(100vw - 2rem); }
+  .chat-thread { height: 260px; }
+
+  /* Portfolio order form */
+  .portfolio-order-form { flex-wrap: wrap; }
+
+  /* Severity badges + insight meta — allow wrapping */
+  .insight-meta { flex-wrap: wrap; gap: 0.3rem; }
+}
+
+@media (max-width: 360px) {
+  .auth-card { padding: 1.25rem 1rem; }
+  .nav > a:first-child { font-size: 1.1rem; }
+  .chat-popup { width: calc(100vw - 1.5rem); }
+  .page-header h2 { font-size: 1.25rem; }
+}

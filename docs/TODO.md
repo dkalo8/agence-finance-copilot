@@ -34,13 +34,13 @@
 - [x] **Frontend** — "Forgot password?" on Login → `/forgot-password`; `/reset-password?token=...` with success redirect to login
 - [x] **Tests** — 9 new tests (400/401/200 cases, expired token, wrong type); 223/223 total
 
-### 5. Polish backlog (lower priority)
-- [ ] **Drag-and-drop goal ordering** — let user set goal priority via drag-and-drop on Goals page
+### 5. Polish backlog (in priority order)
+- [ ] **Responsive CSS** — mobile breakpoints across all pages (highest visibility, affects every page)
 - [ ] **Dashboard balance wiring** — after buying stock, dashboard should reflect updated equity, positions, and sparkline
-- [ ] **Responsive CSS** — mobile breakpoints across all pages
-- [ ] **Account selection** — if user has multiple Plaid or trading accounts, allow switching active account
-- [ ] **Investor risk profile** — settings field for risk tolerance (conservative/moderate/aggressive); feed into autopilot agent rules
 - [ ] **Goal types** — add `goal_type` column (savings/growth/speculation); display type badge
+- [ ] **Drag-and-drop goal ordering** — let user set goal priority via drag-and-drop on Goals page
+- [ ] **Investor risk profile** — settings field for risk tolerance (conservative/moderate/aggressive); feed into autopilot agent rules
+- [ ] **Account selection** — if user has multiple Plaid or trading accounts, allow switching active account
 
 ### 5. Phase 10: Documentation & Demo (deadline-sensitive)
 - [ ] **Add Plaid sandbox instructions to README.md** — graders need: how to link an account, sandbox credentials, what to expect after linking
