@@ -1,8 +1,37 @@
 'use strict';
 
 const router = require('express').Router();
+const Anthropic = require('@anthropic-ai/sdk');
 const authMiddleware = require('../middleware/auth');
 const finnhubService = require('../services/finnhub');
+
+let _anthropic = null;
+function getAnthropicClient() {
+  if (!process.env.ANTHROPIC_API_KEY) return null;
+  if (!_anthropic) _anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  return _anthropic;
+}
+
+async function summarizeTicker(ticker, articles) {
+  const client = getAnthropicClient();
+  if (!client || articles.length === 0) return null;
+  try {
+    const content = articles
+      .map((a, i) => `${i + 1}. ${a.headline}${a.summary ? ` — ${a.summary}` : ''}`)
+      .join('\n');
+    const msg = await client.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 120,
+      messages: [{
+        role: 'user',
+        content: `Summarize the key financial news for ${ticker} in 1-2 sentences:\n${content}\n\nRespond with ONLY the summary. No preamble.`,
+      }],
+    });
+    return msg.content[0]?.text?.trim() || null;
+  } catch {
+    return null;
+  }
+}
 
 // GET /api/v1/news?tickers=AAPL,TSLA
 router.get('/', authMiddleware, async (req, res, next) => {
@@ -17,10 +46,11 @@ router.get('/', authMiddleware, async (req, res, next) => {
 
   try {
     const results = await Promise.all(
-      symbols.map(async ticker => ({
-        ticker,
-        articles: await finnhubService.getNewsArticles(ticker).catch(() => []),
-      }))
+      symbols.map(async ticker => {
+        const articles = await finnhubService.getNewsArticles(ticker).catch(() => []);
+        const summary = await summarizeTicker(ticker, articles);
+        return { ticker, articles, summary };
+      })
     );
     return res.status(200).json({ news: results });
   } catch (err) {

@@ -2,6 +2,17 @@
 
 process.env.JWT_SECRET = 'test-secret'; // pragma: allowlist secret
 process.env.DATABASE_URL = 'postgresql://localhost/agence_dev'; // pragma: allowlist secret
+process.env.ANTHROPIC_API_KEY = 'test-anthropic-key'; // pragma: allowlist secret
+
+jest.mock('@anthropic-ai/sdk', () =>
+  jest.fn().mockImplementation(() => ({
+    messages: {
+      create: jest.fn().mockResolvedValue({
+        content: [{ text: 'Mock AI summary of recent stock news.' }],
+      }),
+    },
+  }))
+);
 
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
@@ -70,6 +81,24 @@ describe('GET /api/v1/news', () => {
       .set('Authorization', `Bearer ${validToken}`);
     expect(res.status).toBe(200);
     expect(res.body.news[0].articles).toEqual([]);
+  });
+
+  test('includes AI summary when articles are available', async () => {
+    finnhubService.getNewsArticles = jest.fn().mockResolvedValue(MOCK_ARTICLES);
+    const res = await request(app)
+      .get('/api/v1/news?tickers=AAPL')
+      .set('Authorization', `Bearer ${validToken}`);
+    expect(res.status).toBe(200);
+    expect(res.body.news[0].summary).toBe('Mock AI summary of recent stock news.');
+  });
+
+  test('summary is null when no articles exist', async () => {
+    finnhubService.getNewsArticles = jest.fn().mockResolvedValue([]);
+    const res = await request(app)
+      .get('/api/v1/news?tickers=AAPL')
+      .set('Authorization', `Bearer ${validToken}`);
+    expect(res.status).toBe(200);
+    expect(res.body.news[0].summary).toBeNull();
   });
 
   test('upcases tickers and strips whitespace', async () => {

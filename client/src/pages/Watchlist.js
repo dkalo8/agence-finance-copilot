@@ -159,11 +159,16 @@ export default function Watchlist() {
                 {!newsLoading && news.length === 0 && (
                   <p className="muted">No recent news found for watched tickers.</p>
                 )}
-                {!newsLoading && news.map(({ ticker, articles }) => {
+                {!newsLoading && news.map(({ ticker, articles, summary }) => {
                   if (!articles || articles.length === 0) return null;
                   return (
                     <div key={ticker} className="news-ticker-group">
                       <h4 className="news-ticker-label">{ticker}</h4>
+                      {summary && (
+                        <p className="news-summary">
+                          <span className="news-summary-label">AI Overview</span>{summary}
+                        </p>
+                      )}
                       <ul className="news-list">
                         {articles.map((a, i) => (
                           <li key={i} className="news-item">

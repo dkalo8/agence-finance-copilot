@@ -971,6 +971,24 @@ input, button, textarea, select {
 .news-toggle-icon { font-size: 0.7rem; color: var(--text-muted); }
 
 .news-ticker-group { margin-bottom: 1.25rem; }
+.news-summary {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  background: rgba(26, 158, 92, 0.08);
+  border-left: 2px solid var(--gain);
+  padding: 0.4rem 0.6rem;
+  margin: 0 0 0.6rem;
+  border-radius: 0 4px 4px 0;
+  line-height: 1.55;
+}
+.news-summary-label {
+  font-weight: 600;
+  color: var(--gain);
+  margin-right: 0.35rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
 .news-ticker-label {
   font-family: var(--font-display);
   font-size: 1rem;
