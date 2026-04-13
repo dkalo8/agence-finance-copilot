@@ -53,7 +53,41 @@ export const getHousehold   = () => getCached('household',    '/household',    5
 export const getProfile     = () => getCached('profile',      '/auth/me',      5 * MIN, d => d);
 export const getTradeHistory = () => getCached('trades',      '/trades',       2 * MIN, d => d.trades || []);
 
-export const getNews = (tickers) => {
-  const joined = tickers.join(',');
-  return getCached(`news_${joined}`, `/news?tickers=${joined}`, 2 * MIN, d => d.news || []);
-};
+// Per-ticker caching: batch-fetch uncached tickers in one request, cache individually.
+// Adding one ticker only fetches that ticker; existing tickers served from cache.
+export async function getNews(tickers) {
+  if (!tickers.length) return [];
+  const now = Date.now();
+  const TTL = 2 * MIN;
+  const cached = {};
+  const missing = [];
+
+  for (const t of tickers) {
+    const raw = sessionStorage.getItem(PREFIX + 'news_' + t);
+    if (raw) {
+      try {
+        const { value, ts } = JSON.parse(raw);
+        if (now - ts < TTL) { cached[t] = value; continue; }
+      } catch { /* corrupted — re-fetch */ }
+    }
+    missing.push(t);
+  }
+
+  if (missing.length > 0) {
+    const { data } = await api.get(`/news?tickers=${missing.join(',')}`);
+    for (const item of (data.news || [])) {
+      try {
+        sessionStorage.setItem(PREFIX + 'news_' + item.ticker, JSON.stringify({ value: item, ts: now }));
+      } catch { /* storage full */ }
+      cached[item.ticker] = item;
+    }
+  }
+
+  return tickers.map(t => cached[t]).filter(Boolean);
+}
+
+export function invalidateAllNews() {
+  Object.keys(sessionStorage)
+    .filter(k => k.startsWith(PREFIX + 'news_'))
+    .forEach(k => sessionStorage.removeItem(k));
+}

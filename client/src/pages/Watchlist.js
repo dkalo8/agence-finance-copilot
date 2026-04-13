@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import AppNav from '../components/AppNav';
 import api from '../api/client';
-import { getWatchlist, invalidate, getNews } from '../api/apiCache';
+import { getWatchlist, invalidate, invalidateAllNews, getNews } from '../api/apiCache';
 
 export default function Watchlist() {
   const [watchlist, setWatchlist] = useState([]);
@@ -14,6 +14,7 @@ export default function Watchlist() {
   const [newsOpen, setNewsOpen] = useState(false);
   const [newsLoading, setNewsLoading] = useState(false);
   const [expandedTickers, setExpandedTickers] = useState(new Set());
+  const [newsSearch, setNewsSearch] = useState('');
 
   async function refreshNews(items) {
     if (!items.length) { setNews([]); return; }
@@ -22,6 +23,11 @@ export default function Watchlist() {
       const data = await getNews(items.map(w => w.ticker));
       setNews(data);
     } catch { /* silent */ } finally { setNewsLoading(false); }
+  }
+
+  async function handleRefreshNews() {
+    invalidateAllNews();
+    await refreshNews(watchlist);
   }
 
   function toggleExpanded(ticker) {
@@ -77,9 +83,9 @@ export default function Watchlist() {
     try {
       await api.delete(`/watchlist/${ticker}`);
       invalidate('watchlist');
-      const updated = watchlist.filter(w => w.ticker !== ticker);
-      setWatchlist(updated);
-      refreshNews(updated);
+      invalidate('news_' + ticker);
+      setWatchlist(prev => prev.filter(w => w.ticker !== ticker));
+      setNews(prev => prev.filter(n => n.ticker !== ticker));
     } catch {
       setError('Could not remove ticker.');
     }
@@ -133,7 +139,7 @@ export default function Watchlist() {
                 </tr>
               </thead>
               <tbody>
-                {watchlist.map(item => {
+                {[...watchlist].sort((a, b) => a.ticker.localeCompare(b.ticker)).map(item => {
                   const chg = item.changePercent;
                   const chgColor = chg == null ? '' : chg >= 0 ? '#4caf82' : '#e05c5c';
                   const chgLabel = chg == null ? '—' : `${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%`;
@@ -165,14 +171,35 @@ export default function Watchlist() {
 
         {!loading && watchlist.length > 0 && (
           <section className="expenses-section">
-            <button
-              className="news-toggle-btn"
-              onClick={() => setNewsOpen(o => !o)}
-              aria-expanded={newsOpen}
-            >
-              <span>Recent News</span>
-              <span className="news-toggle-icon">{newsOpen ? '▲' : '▼'}</span>
-            </button>
+            <div className="news-header-row">
+              <button
+                className="news-toggle-btn"
+                onClick={() => setNewsOpen(o => !o)}
+                aria-expanded={newsOpen}
+              >
+                <span>Recent News</span>
+                <span className="news-toggle-icon">{newsOpen ? '▲' : '▼'}</span>
+              </button>
+              {newsOpen && (
+                <div className="news-controls">
+                  <input
+                    className="news-search-input"
+                    type="text"
+                    placeholder="Filter by ticker…"
+                    value={newsSearch}
+                    onChange={e => setNewsSearch(e.target.value.toUpperCase())}
+                  />
+                  <button
+                    className="news-refresh-btn"
+                    onClick={handleRefreshNews}
+                    disabled={newsLoading}
+                    title="Refresh news"
+                  >
+                    ↻
+                  </button>
+                </div>
+              )}
+            </div>
 
             {newsOpen && (
               <div className="news-feed" style={{ marginTop: '0.75rem' }}>
@@ -180,7 +207,10 @@ export default function Watchlist() {
                 {!newsLoading && news.length === 0 && (
                   <p className="muted">No recent news found for watched tickers.</p>
                 )}
-                {!newsLoading && news.map(({ ticker, articles, summary }) => {
+                {!newsLoading && [...news]
+                  .sort((a, b) => a.ticker.localeCompare(b.ticker))
+                  .filter(({ ticker }) => !newsSearch || ticker.includes(newsSearch))
+                  .map(({ ticker, articles, summary }) => {
                   if (!articles || articles.length === 0) return null;
                   const isExpanded = expandedTickers.has(ticker);
                   const visible = isExpanded ? articles : articles.slice(0, 3);
