@@ -1101,12 +1101,12 @@ input, button, textarea, select {
   .dash-hero-value { font-size: 2.2rem; }
   .nav { padding: 0 1.25rem; }
   .nav nav { gap: 1rem; }
-  .nav nav a { font-size: 0.8rem; }
+  .nav nav a, .nav-dropdown-trigger { font-size: 0.8rem; }
 }
 
 @media (max-width: 480px) {
   .nav nav { gap: 0.65rem; }
-  .nav nav a { font-size: 0.75rem; }
+  .nav nav a, .nav-dropdown-trigger { font-size: 0.75rem; }
   .portfolio-summary { flex-wrap: wrap; }
   .dash-hero { padding: 1.5rem 1.25rem; }
   .dash-hero-value { font-size: 1.9rem; }
