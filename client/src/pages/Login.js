@@ -68,7 +68,7 @@ export default function Login() {
           <GoogleLogin
             onSuccess={handleGoogleSuccess}
             onError={() => setError('Google sign-in failed')}
-            width="100%"
+            width={340}
           />
         </div>
         <p style={{ marginTop: '0.5rem' }}>No account? <Link to="/register">Register</Link></p>

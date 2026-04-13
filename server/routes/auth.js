@@ -37,7 +37,10 @@ async function sendResetEmail(email, token) {
   // Gmail SMTP via nodemailer (preferred — works for any recipient)
   if (process.env.SMTP_USER && process.env.SMTP_PASS) {
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false, // STARTTLS — Render blocks IPv6/465, 587+IPv4 works
+      family: 4,     // force IPv4
       auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
       connectionTimeout: 8000,
       greetingTimeout: 8000,

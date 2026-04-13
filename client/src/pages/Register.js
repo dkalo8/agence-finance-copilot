@@ -69,7 +69,7 @@ export default function Register() {
           <GoogleLogin
             onSuccess={handleGoogleSuccess}
             onError={() => setError('Google sign-in failed')}
-            width="100%"
+            width={340}
           />
         </div>
         <p>Already have an account? <Link to="/login">Sign in</Link></p>
