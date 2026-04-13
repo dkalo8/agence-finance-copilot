@@ -168,4 +168,5 @@ _Last updated: 2026-04-10_
 - Password reset added to TODO as 9F.
 - 9D Watchlist News Feed ✅ — `GET /api/v1/news?tickers=...` (Finnhub, Promise.all per ticker); collapsible "Recent News" section in Watchlist.js; `getNews(tickers)` in apiCache.js with 2-min TTL. 214/214 tests.
 - Bug fixes: watchlist cache invalidation on add/remove (missing invalidate() calls); re-fetch full list after add (for Alpaca prices); finnhub v2 SDK fix (ApiClient.instance removed, now `new DefaultApi(key)`).
-- **Next: 9E Nav Redesign (dropdowns)**
+- 9E Nav Redesign ✅ — CSS-only hover dropdowns; Money▾ (Expenses, Goals), Markets▾ (Portfolio, Watchlist); 3 fix iterations (--navy-900 undefined, chevron removed, align-self stretch for full-height hover zone).
+- **Next: 9F Password Reset**

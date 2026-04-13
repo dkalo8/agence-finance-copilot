@@ -266,6 +266,10 @@ async function linkGoogleId(userId, googleId) {
   await pool.query('UPDATE users SET google_id = $1 WHERE id = $2', [googleId, userId]);
 }
 
+async function updatePasswordHash(userId, passwordHash) {
+  await pool.query('UPDATE users SET password_hash = $1 WHERE id = $2', [passwordHash, userId]);
+}
+
 module.exports = {
   createUser,
   getUserByEmail,
@@ -273,6 +277,7 @@ module.exports = {
   getUserByGoogleId,
   createUserWithGoogle,
   linkGoogleId,
+  updatePasswordHash,
   createAccount,
   getAccountsByUserId,
   upsertTransactions,

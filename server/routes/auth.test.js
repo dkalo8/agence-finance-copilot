@@ -9,6 +9,11 @@ const app = require('../index');
 // Mock queries and bcrypt — we're testing route logic, not the DB or hashing
 jest.mock('../db/queries');
 jest.mock('bcrypt');
+jest.mock('resend', () => ({
+  Resend: jest.fn().mockImplementation(() => ({
+    emails: { send: jest.fn().mockResolvedValue({ id: 'mock-email-id' }) },
+  })),
+}));
 
 const queries = require('../db/queries');
 const bcrypt = require('bcrypt');
@@ -196,5 +201,91 @@ describe('GET /api/v1/auth/me', () => {
       .get('/api/v1/auth/me')
       .set('Authorization', `Bearer ${validToken}`);
     expect(res.status).toBe(404);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// POST /api/v1/auth/forgot-password
+// ---------------------------------------------------------------------------
+describe('POST /api/v1/auth/forgot-password', () => {
+  test('returns 400 when email is missing', async () => {
+    const res = await request(app).post('/api/v1/auth/forgot-password').send({});
+    expect(res.status).toBe(400);
+  });
+
+  test('returns 200 even when email not found (no leak)', async () => {
+    queries.getUserByEmail.mockResolvedValue(null);
+    const res = await request(app)
+      .post('/api/v1/auth/forgot-password')
+      .send({ email: 'unknown@test.com' });
+    expect(res.status).toBe(200);
+  });
+
+  test('returns 200 and does not error when email exists', async () => {
+    queries.getUserByEmail.mockResolvedValue({ id: 'uuid-1', email: 'user@test.com' });
+    const res = await request(app)
+      .post('/api/v1/auth/forgot-password')
+      .send({ email: 'user@test.com' });
+    expect(res.status).toBe(200);
+    expect(res.body.message).toBeDefined();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// POST /api/v1/auth/reset-password
+// ---------------------------------------------------------------------------
+describe('POST /api/v1/auth/reset-password', () => {
+  const jwt = require('jsonwebtoken');
+  const RESET_SECRET = 'test-secret-reset'; // pragma: allowlist secret
+
+  function makeResetToken(payload, expiresIn = '1h') {
+    return jwt.sign(payload, RESET_SECRET, { expiresIn });
+  }
+
+  test('returns 400 when token is missing', async () => {
+    const res = await request(app).post('/api/v1/auth/reset-password').send({ password: 'NewPass123!' }); // pragma: allowlist secret
+    expect(res.status).toBe(400);
+  });
+
+  test('returns 400 when password is missing', async () => {
+    const res = await request(app).post('/api/v1/auth/reset-password').send({ token: 'abc' });
+    expect(res.status).toBe(400);
+  });
+
+  test('returns 401 with invalid token', async () => {
+    const res = await request(app)
+      .post('/api/v1/auth/reset-password')
+      .send({ token: 'not-a-valid-jwt', password: 'NewPass123!' }); // pragma: allowlist secret
+    expect(res.status).toBe(401);
+  });
+
+  test('returns 401 when token type is not password-reset', async () => {
+    const wrongToken = makeResetToken({ userId: 'uuid-1', type: 'auth' });
+    const res = await request(app)
+      .post('/api/v1/auth/reset-password')
+      .send({ token: wrongToken, password: 'NewPass123!' }); // pragma: allowlist secret
+    expect(res.status).toBe(401);
+  });
+
+  test('returns 401 with expired token', async () => {
+    const expired = makeResetToken({ userId: 'uuid-1', type: 'password-reset' }, '0s');
+    // wait a tick for the token to expire
+    await new Promise(r => setTimeout(r, 50));
+    const res = await request(app)
+      .post('/api/v1/auth/reset-password')
+      .send({ token: expired, password: 'NewPass123!' }); // pragma: allowlist secret
+    expect(res.status).toBe(401);
+  });
+
+  test('returns 200 and updates password with valid token', async () => {
+    const token = makeResetToken({ userId: 'uuid-1', email: 'user@test.com', type: 'password-reset' });
+    queries.getUserById.mockResolvedValue({ id: 'uuid-1', email: 'user@test.com' });
+    bcrypt.hash.mockResolvedValue('hashed-new-pw');
+    queries.updatePasswordHash = jest.fn().mockResolvedValue();
+    const res = await request(app)
+      .post('/api/v1/auth/reset-password')
+      .send({ token, password: 'NewPass123!' }); // pragma: allowlist secret
+    expect(res.status).toBe(200);
+    expect(queries.updatePasswordHash).toHaveBeenCalledWith('uuid-1', 'hashed-new-pw');
   });
 });

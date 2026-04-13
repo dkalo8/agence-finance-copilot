@@ -28,13 +28,11 @@
 - [x] CSS-only hover dropdowns with opacity/visibility transition and invisible bridge padding
 - [x] E2E selectors unchanged — tests only reference `.nav` and `link[Insights]`
 
-### 4. 9F: Password Reset
-> Allow users to reset their password via email link.
-
-- [ ] **Backend** — `POST /api/v1/auth/forgot-password` (send reset email); `POST /api/v1/auth/reset-password` (verify token, update hash); use time-limited signed token (JWT or random + DB column)
-- [ ] **Email** — use Resend or Nodemailer + Gmail SMTP; token valid 1 hour
-- [ ] **Frontend** — "Forgot password?" link on Login page → `/forgot-password` page; `/reset-password?token=...` page
-- [ ] **Tests** — mock email send; verify token expiry + hash update
+### 4. 9F: Password Reset ✅
+- [x] **Backend** — `POST /api/v1/auth/forgot-password` (JWT reset token, Resend email, always 200 — no email-exists leak); `POST /api/v1/auth/reset-password` (verify token type + expiry, bcrypt hash update)
+- [x] **Email** — Resend package; falls back to `console.log` reset URL if `RESEND_API_KEY` not set (dev-friendly)
+- [x] **Frontend** — "Forgot password?" on Login → `/forgot-password`; `/reset-password?token=...` with success redirect to login
+- [x] **Tests** — 9 new tests (400/401/200 cases, expired token, wrong type); 223/223 total
 
 ### 5. Polish backlog (lower priority)
 - [ ] **Drag-and-drop goal ordering** — let user set goal priority via drag-and-drop on Goals page

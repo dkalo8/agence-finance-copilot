@@ -3,6 +3,7 @@
 const router = require('express').Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { Resend } = require('resend');
 const { OAuth2Client } = require('google-auth-library');
 const queries = require('../db/queries');
 const authMiddleware = require('../middleware/auth');
@@ -13,6 +14,35 @@ const SALT_ROUNDS = 10;
 
 function signToken(userId) {
   return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
+}
+
+function resetSecret() {
+  return (process.env.JWT_SECRET || '') + '-reset';
+}
+
+function signResetToken(userId, email) {
+  return jwt.sign({ userId, email, type: 'password-reset' }, resetSecret(), { expiresIn: '1h' });
+}
+
+function verifyResetToken(token) {
+  return jwt.verify(token, resetSecret());
+}
+
+async function sendResetEmail(email, token) {
+  const clientUrl = process.env.CLIENT_URL || 'https://agence-flame.vercel.app';
+  const resetUrl = `${clientUrl}/reset-password?token=${token}`;
+
+  if (!process.env.RESEND_API_KEY) {
+    console.log(`[dev] Password reset link for ${email}: ${resetUrl}`); // eslint-disable-line no-console
+    return;
+  }
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  await resend.emails.send({
+    from: 'Agence <onboarding@resend.dev>',
+    to: email,
+    subject: 'Reset your Agence password',
+    html: `<p>Click <a href="${resetUrl}">here</a> to reset your Agence password. This link expires in 1 hour.</p><p>If you did not request this, you can ignore this email.</p>`,
+  });
 }
 
 // POST /api/v1/auth/register
@@ -98,6 +128,50 @@ router.post('/google', async (req, res, next) => {
     // 3. New user
     user = await queries.createUserWithGoogle(email, googleId);
     return res.status(200).json({ token: signToken(user.id), userId: user.id });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/v1/auth/forgot-password
+router.post('/forgot-password', async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'email is required' });
+
+    const user = await queries.getUserByEmail(email);
+    if (user) {
+      const token = signResetToken(user.id, user.email);
+      await sendResetEmail(user.email, token).catch(() => {}); // non-critical
+    }
+    // Always return 200 — don't reveal whether email exists
+    return res.status(200).json({ message: 'If that email is registered, a reset link is on its way.' });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/v1/auth/reset-password
+router.post('/reset-password', async (req, res, next) => {
+  try {
+    const { token, password } = req.body;
+    if (!token || !password) return res.status(400).json({ error: 'token and password are required' });
+
+    let payload;
+    try {
+      payload = verifyResetToken(token);
+    } catch {
+      return res.status(401).json({ error: 'Invalid or expired reset link' });
+    }
+
+    if (payload.type !== 'password-reset') {
+      return res.status(401).json({ error: 'Invalid reset token' });
+    }
+
+    const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+    await queries.updatePasswordHash(payload.userId, passwordHash);
+
+    return res.status(200).json({ message: 'Password updated. You can now sign in.' });
   } catch (err) {
     next(err);
   }

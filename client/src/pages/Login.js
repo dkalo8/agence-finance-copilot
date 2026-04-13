@@ -71,7 +71,8 @@ export default function Login() {
             width="100%"
           />
         </div>
-        <p>No account? <Link to="/register">Register</Link></p>
+        <p style={{ marginTop: '0.5rem' }}>No account? <Link to="/register">Register</Link></p>
+        <p style={{ marginTop: '0.25rem', fontSize: '0.85rem' }}><Link to="/forgot-password">Forgot password?</Link></p>
       </div>
     </div>
   );
