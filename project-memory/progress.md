@@ -170,3 +170,9 @@ _Last updated: 2026-04-10_
 - Bug fixes: watchlist cache invalidation on add/remove (missing invalidate() calls); re-fetch full list after add (for Alpaca prices); finnhub v2 SDK fix (ApiClient.instance removed, now `new DefaultApi(key)`).
 - 9E Nav Redesign ✅ — CSS-only hover dropdowns; Money▾ (Expenses, Goals), Markets▾ (Portfolio, Watchlist); 3 fix iterations (--navy-900 undefined, chevron removed, align-self stretch for full-height hover zone).
 - **Next: 9F Password Reset**
+
+**Session 2026-04-13 (continued):**
+- 9F Password Reset ✅ — `POST /api/v1/auth/forgot-password` + `POST /api/v1/auth/reset-password`; JWT reset token (1h, separate secret); ForgotPassword.js + ResetPassword.js frontend pages; "Forgot password?" link on Login. 9 new tests (223/223 total).
+- Email delivery: tried Gmail SMTP → blocked by Render free tier (all outbound SMTP ports). Switched to SendGrid HTTPS API (`@sendgrid/mail`). Chain: SendGrid → Resend → console.log dev fallback.
+- Google button width warning fixed ✅ — `width={340}` (numeric) on GoogleLogin in Login.js + Register.js.
+- **Next: Polish backlog (responsive CSS, news article count + AI summary, drag-drop goals)**
