@@ -152,16 +152,7 @@ input, button, textarea, select {
   letter-spacing: 0.01em;
   cursor: default;
   user-select: none;
-  display: flex;
-  align-items: center;
-  gap: 0.2rem;
   transition: color var(--transition);
-}
-.nav-dropdown-trigger::after {
-  content: '▾';
-  font-size: 0.6rem;
-  opacity: 0.6;
-  margin-top: 1px;
 }
 .nav-dropdown:hover .nav-dropdown-trigger { color: #ffffff; }
 
@@ -170,17 +161,17 @@ input, button, textarea, select {
   top: 100%;
   left: 50%;
   transform: translateX(-50%) translateY(4px);
-  background: var(--navy-900);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--navy-950);
+  border: 1px solid rgba(255,255,255,0.12);
   border-radius: var(--radius-sm);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.6);
   min-width: 130px;
   padding: 0.35rem 0;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
   z-index: 200;
-  /* invisible bridge so cursor can move from trigger to menu */
+  /* invisible bridge so cursor can reach menu items without it closing */
   padding-top: calc(0.35rem + 4px);
   margin-top: -4px;
 }
