@@ -176,3 +176,12 @@ _Last updated: 2026-04-10_
 - Email delivery: tried Gmail SMTP → blocked by Render free tier (all outbound SMTP ports). Switched to SendGrid HTTPS API (`@sendgrid/mail`). Chain: SendGrid → Resend → console.log dev fallback.
 - Google button width warning fixed ✅ — `width={340}` (numeric) on GoogleLogin in Login.js + Register.js.
 - **Next: Polish backlog (responsive CSS, news article count + AI summary, drag-drop goals)**
+
+**Session 2026-04-13 (continued — news/watchlist polish):**
+- News: 7 articles/ticker fetched, 3 shown by default + per-ticker expand button. 225/225 tests.
+- Agence Overview: improved prompt uses full article body + analyst framing ("what's driving the stock").
+- Per-ticker news caching in apiCache.js — adding ticker only fetches that ticker; remove = instant state filter.
+- Watchlist + news section sorted A→Z. Search filter in news. Refresh button (↻).
+- Email: SendGrid HTTPS API now primary (Render free tier blocks SMTP). `@sendgrid/mail` installed. SENDGRID_API_KEY + SENDGRID_FROM env vars on Render.
+- fixes.md cleared.
+- **Next: Step 5 polish backlog (responsive CSS, drag-drop goals, etc.)**
