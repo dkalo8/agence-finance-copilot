@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import AppNav from '../components/AppNav';
 import api from '../api/client';
-import { getWatchlist } from '../api/apiCache';
+import { getWatchlist, invalidate } from '../api/apiCache';
 
 export default function Watchlist() {
   const [watchlist, setWatchlist] = useState([]);
@@ -29,6 +29,7 @@ export default function Watchlist() {
     setError('');
     try {
       const { data } = await api.post('/watchlist', { ticker });
+      invalidate('watchlist');
       setWatchlist(prev => [data, ...prev]);
       setInput('');
     } catch {
@@ -41,6 +42,7 @@ export default function Watchlist() {
   async function handleRemove(ticker) {
     try {
       await api.delete(`/watchlist/${ticker}`);
+      invalidate('watchlist');
       setWatchlist(prev => prev.filter(w => w.ticker !== ticker));
     } catch {
       setError('Could not remove ticker.');
