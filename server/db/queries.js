@@ -29,10 +29,17 @@ async function getUserByEmail(email) {
 
 async function getUserById(id) {
   const { rows } = await pool.query(
-    'SELECT id, email, created_at, google_id IS NOT NULL AS has_google_auth FROM users WHERE id = $1',
+    'SELECT id, email, created_at, risk_tolerance, google_id IS NOT NULL AS has_google_auth FROM users WHERE id = $1',
     [id]
   );
   return rows[0] ?? null;
+}
+
+async function updateRiskTolerance(userId, riskTolerance) {
+  await pool.query(
+    'UPDATE users SET risk_tolerance = $2 WHERE id = $1',
+    [userId, riskTolerance]
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -287,6 +294,7 @@ module.exports = {
   createUserWithGoogle,
   linkGoogleId,
   updatePasswordHash,
+  updateRiskTolerance,
   createAccount,
   getAccountsByUserId,
   upsertTransactions,

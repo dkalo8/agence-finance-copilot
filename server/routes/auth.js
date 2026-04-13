@@ -191,7 +191,29 @@ router.get('/me', authMiddleware, async (req, res, next) => {
   try {
     const user = await queries.getUserById(req.userId);
     if (!user) return res.status(404).json({ error: 'User not found' });
-    return res.status(200).json({ id: user.id, email: user.email, createdAt: user.created_at, hasGoogleAuth: user.has_google_auth });
+    return res.status(200).json({
+      id: user.id,
+      email: user.email,
+      createdAt: user.created_at,
+      hasGoogleAuth: user.has_google_auth,
+      riskTolerance: user.risk_tolerance || 'moderate',
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+const VALID_RISK_LEVELS = new Set(['conservative', 'moderate', 'aggressive']);
+
+// PATCH /api/v1/auth/me
+router.patch('/me', authMiddleware, async (req, res, next) => {
+  const { riskTolerance } = req.body;
+  if (!riskTolerance || !VALID_RISK_LEVELS.has(riskTolerance)) {
+    return res.status(400).json({ error: 'riskTolerance must be conservative, moderate, or aggressive' });
+  }
+  try {
+    await queries.updateRiskTolerance(req.userId, riskTolerance);
+    return res.status(200).json({ riskTolerance });
   } catch (err) {
     next(err);
   }

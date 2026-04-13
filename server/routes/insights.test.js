@@ -25,6 +25,7 @@ beforeEach(() => {
   jest.clearAllMocks();
   // Default DB mocks
   queries.getWatchlistByUserId.mockResolvedValue([]);
+  queries.getUserById.mockResolvedValue({ id: 'uuid-1', email: 'a@b.com', risk_tolerance: 'moderate' });
   // Default Alpaca mocks — no positions
   alpacaService.getPositions.mockResolvedValue([]);
   alpacaService.getAccount.mockResolvedValue({ cash: '1000', equity: '1000' });

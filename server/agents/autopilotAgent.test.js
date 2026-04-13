@@ -143,9 +143,60 @@ describe('autopilotAgent — cycle 4: core logic', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Cycle 5 — edge cases
+// Cycle 5 — risk tolerance thresholds
 // ---------------------------------------------------------------------------
-describe('autopilotAgent — cycle 5: edge cases', () => {
+describe('autopilotAgent — cycle 5: risk tolerance', () => {
+  // 18% position — above conservative (15%) but below moderate (20%)
+  const eighteenPctData = {
+    tickers: ['AAPL', 'TSLA'],
+    positions: {
+      AAPL: { qty: 18, avgCost: 100, currentPrice: 100 }, // $1800
+      TSLA: { qty: 82, avgCost: 100, currentPrice: 100 }, // $8200 — total $10000
+    },
+    quotes: {
+      AAPL: { price: 100, change: 0 },
+      TSLA: { price: 100, change: 0 },
+    },
+    news: {},
+  };
+
+  test('conservative triggers rebalance at 15% concentration', () => {
+    const signals = autopilotAgent({ riskTolerance: 'conservative' }, eighteenPctData);
+    expect(signals.some(s => s.type === 'rebalance' && s.ticker === 'AAPL')).toBe(true);
+  });
+
+  test('moderate does not rebalance at 18% concentration', () => {
+    const signals = autopilotAgent({ riskTolerance: 'moderate' }, eighteenPctData);
+    expect(signals.some(s => s.type === 'rebalance' && s.ticker === 'AAPL')).toBe(false);
+  });
+
+  test('conservative triggers buy_dip at -4% drop', () => {
+    const data = {
+      tickers: ['TSLA'],
+      positions: { TSLA: { qty: 5, avgCost: 260, currentPrice: 250 } },
+      quotes: { TSLA: { price: 250, change: -4.0 } },
+      news: {},
+    };
+    const signals = autopilotAgent({ riskTolerance: 'conservative' }, data);
+    expect(signals.some(s => s.type === 'buy_dip' && s.ticker === 'TSLA')).toBe(true);
+  });
+
+  test('aggressive does not buy_dip at -6% (needs -8%)', () => {
+    const data = {
+      tickers: ['TSLA'],
+      positions: { TSLA: { qty: 5, avgCost: 260, currentPrice: 250 } },
+      quotes: { TSLA: { price: 250, change: -6.0 } },
+      news: {},
+    };
+    const signals = autopilotAgent({ riskTolerance: 'aggressive' }, data);
+    expect(signals.some(s => s.type === 'buy_dip' && s.ticker === 'TSLA')).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Cycle 6 — edge cases
+// ---------------------------------------------------------------------------
+describe('autopilotAgent — cycle 6: edge cases', () => {
   test('handles no tickers gracefully', () => {
     expect(autopilotAgent(mockUserData, emptyMarketData)).toEqual([]);
   });

@@ -16,6 +16,11 @@ export default function Settings() {
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState('');
 
+  // Risk tolerance
+  const [riskTolerance, setRiskTolerance] = useState('moderate');
+  const [savingRisk, setSavingRisk] = useState(false);
+  const [riskMsg, setRiskMsg] = useState('');
+
   // Invite form
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviting, setInviting] = useState(false);
@@ -24,10 +29,25 @@ export default function Settings() {
 
   function fetchAll() {
     return Promise.all([
-      getProfile().then(data => setProfile(data)).catch(() => {}),
+      getProfile().then(data => { setProfile(data); if (data?.riskTolerance) setRiskTolerance(data.riskTolerance); }).catch(() => {}),
       getAccounts().then(accounts => setAccounts(accounts)).catch(() => {}),
       getHousehold().then(household => setHousehold(household)).catch(() => {}),
     ]).finally(() => setLoading(false));
+  }
+
+  async function handleSaveRisk() {
+    setSavingRisk(true);
+    setRiskMsg('');
+    try {
+      await api.patch('/auth/me', { riskTolerance });
+      invalidate('profile');
+      setRiskMsg('Saved');
+      setTimeout(() => setRiskMsg(''), 2500);
+    } catch {
+      setRiskMsg('Failed to save');
+    } finally {
+      setSavingRisk(false);
+    }
   }
 
   useEffect(() => { fetchAll(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -124,6 +144,50 @@ export default function Settings() {
             </table>
           </section>
         )}
+
+        {/* Risk Profile */}
+        <section className="expenses-section" style={{ marginBottom: '1.5rem' }}>
+          <h3 className="dash-section-title">Investor Risk Profile</h3>
+          <p className="muted" style={{ marginBottom: '0.75rem', fontSize: '0.85rem' }}>
+            Controls how aggressively the AI autopilot rebalances and identifies buying opportunities.
+          </p>
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '0.75rem' }}>
+            {['conservative', 'moderate', 'aggressive'].map(level => (
+              <label
+                key={level}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer',
+                  padding: '0.5rem 1rem', borderRadius: 'var(--radius-sm)',
+                  border: `1.5px solid ${riskTolerance === level ? 'var(--navy-600)' : 'var(--navy-200)'}`,
+                  background: riskTolerance === level ? 'var(--navy-50)' : 'var(--bg-surface)',
+                  fontWeight: riskTolerance === level ? 600 : 400,
+                  fontSize: '0.9rem', textTransform: 'capitalize',
+                  transition: 'all 0.15s',
+                }}
+              >
+                <input
+                  type="radio"
+                  name="riskTolerance"
+                  value={level}
+                  checked={riskTolerance === level}
+                  onChange={() => setRiskTolerance(level)}
+                  style={{ display: 'none' }}
+                />
+                {level}
+              </label>
+            ))}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <button
+              onClick={handleSaveRisk}
+              disabled={savingRisk}
+              style={{ padding: '0.5rem 1.2rem', background: 'var(--navy-800)', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: '0.875rem' }}
+            >
+              {savingRisk ? 'Saving…' : 'Save'}
+            </button>
+            {riskMsg && <span style={{ fontSize: '0.85rem', color: riskMsg === 'Saved' ? 'var(--gain)' : 'var(--loss)' }}>{riskMsg}</span>}
+          </div>
+        </section>
 
         {/* Household */}
         <section className="expenses-section" style={{ marginBottom: '1.5rem' }}>

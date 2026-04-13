@@ -14,16 +14,23 @@ router.get('/', authMiddleware, async (req, res, next) => {
     const { userId } = req;
 
     // Assemble userData from DB (Plaid data) + marketData from Alpaca/Finnhub in parallel
-    const [transactions, accounts, goals, watchlistItems, rawPositions, account] = await Promise.all([
+    const [transactions, accounts, goals, watchlistItems, rawPositions, account, user] = await Promise.all([
       queries.getTransactionsByUserId(userId),
       queries.getAccountsByUserId(userId),
       queries.getGoalsByUserId(userId),
       queries.getWatchlistByUserId(userId).catch(() => []),
       alpacaService.getPositions().catch(() => []),
       alpacaService.getAccount().catch(() => ({ cash: '0', equity: '0' })),
+      queries.getUserById(userId).catch(() => null),
     ]);
 
-    const userData = { transactions, accounts, goals, watchlist: watchlistItems };
+    const userData = {
+      transactions,
+      accounts,
+      goals,
+      watchlist: watchlistItems,
+      riskTolerance: user?.risk_tolerance || 'moderate',
+    };
 
     // Build positions map for agents
     const portfolioTickers = rawPositions.map(p => p.symbol);

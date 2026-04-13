@@ -190,13 +190,14 @@ describe('GET /api/v1/auth/me', () => {
     expect(res.status).toBe(401);
   });
 
-  test('returns email and createdAt for authenticated user', async () => {
-    queries.getUserById.mockResolvedValue({ id: 'uuid-1', email: 'a@b.com', created_at: '2026-04-01' });
+  test('returns email, createdAt, and riskTolerance for authenticated user', async () => {
+    queries.getUserById.mockResolvedValue({ id: 'uuid-1', email: 'a@b.com', created_at: '2026-04-01', risk_tolerance: 'moderate' });
     const res = await request(app)
       .get('/api/v1/auth/me')
       .set('Authorization', `Bearer ${validToken}`);
     expect(res.status).toBe(200);
     expect(res.body.email).toBe('a@b.com');
+    expect(res.body.riskTolerance).toBe('moderate');
   });
 
   test('returns 404 when user not found', async () => {
@@ -205,6 +206,34 @@ describe('GET /api/v1/auth/me', () => {
       .get('/api/v1/auth/me')
       .set('Authorization', `Bearer ${validToken}`);
     expect(res.status).toBe(404);
+  });
+});
+
+describe('PATCH /api/v1/auth/me', () => {
+  const jwt = require('jsonwebtoken');
+  const validToken = jwt.sign({ userId: 'uuid-1' }, 'test-secret');
+
+  test('returns 401 without token', async () => {
+    const res = await request(app).patch('/api/v1/auth/me');
+    expect(res.status).toBe(401);
+  });
+
+  test('returns 400 for invalid riskTolerance', async () => {
+    const res = await request(app)
+      .patch('/api/v1/auth/me')
+      .set('Authorization', `Bearer ${validToken}`)
+      .send({ riskTolerance: 'yolo' });
+    expect(res.status).toBe(400);
+  });
+
+  test('returns 200 and updates riskTolerance', async () => {
+    queries.updateRiskTolerance = jest.fn().mockResolvedValue();
+    const res = await request(app)
+      .patch('/api/v1/auth/me')
+      .set('Authorization', `Bearer ${validToken}`)
+      .send({ riskTolerance: 'aggressive' });
+    expect(res.status).toBe(200);
+    expect(queries.updateRiskTolerance).toHaveBeenCalledWith('uuid-1', 'aggressive');
   });
 });
 

@@ -41,6 +41,8 @@
 - [x] **Drag-and-drop goal ordering** — let user set goal priority via drag-and-drop on Goals page
 - [ ] **Investor risk profile** — settings field for risk tolerance (conservative/moderate/aggressive); feed into autopilot agent rules
 - [ ] **Account selection** — if user has multiple Plaid or trading accounts, allow switching active account
+- [ ] **Household badge visibility** — "Household: X" badge on Dashboard should only show when household account is the active selected account (follow-up to Account Selection)
+- [ ] **About page** — user-friendly page explaining the app, multi-agent architecture, Agents + Finance = Agence vision, how each agent differentiates the platform, how to navigate the app
 
 ### 5. Phase 10: Documentation & Demo (deadline-sensitive)
 - [ ] **Add Plaid sandbox instructions to README.md** — graders need: how to link an account, sandbox credentials, what to expect after linking
