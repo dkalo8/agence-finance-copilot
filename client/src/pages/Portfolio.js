@@ -82,9 +82,7 @@ export default function Portfolio() {
       invalidate('portfolio');
       invalidate('trades');
       setLoading(true);
-      await fetchPortfolio();
-      fetchTrades();
-      await fetchTrades();
+      await Promise.all([fetchPortfolio(), fetchTrades()]);
     } catch (err) {
       setTradeError(err.response?.data?.error || 'Trade failed');
     } finally {
