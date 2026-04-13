@@ -48,7 +48,12 @@ function getNewsArticles(symbol, limit = 5) {
     const to = today.toISOString().slice(0, 10);
 
     getClient().companyNews(symbol, from, to, (err, data) => {
-      if (err || !data || data.length === 0) {
+      if (err) {
+        console.error(`[finnhub] companyNews error for ${symbol}:`, err?.message || err); // eslint-disable-line no-console
+        resolve([]);
+        return;
+      }
+      if (!data || data.length === 0) {
         resolve([]);
         return;
       }
