@@ -235,6 +235,34 @@ describe('PATCH /api/v1/auth/me', () => {
     expect(res.status).toBe(200);
     expect(queries.updateRiskTolerance).toHaveBeenCalledWith('uuid-1', 'aggressive');
   });
+
+  test('returns 200 and sets activeAccountId', async () => {
+    queries.updateActiveAccount = jest.fn().mockResolvedValue();
+    const res = await request(app)
+      .patch('/api/v1/auth/me')
+      .set('Authorization', `Bearer ${validToken}`)
+      .send({ activeAccountId: 'acc-uuid-1' });
+    expect(res.status).toBe(200);
+    expect(queries.updateActiveAccount).toHaveBeenCalledWith('uuid-1', 'acc-uuid-1');
+  });
+
+  test('returns 200 and clears activeAccountId when null', async () => {
+    queries.updateActiveAccount = jest.fn().mockResolvedValue();
+    const res = await request(app)
+      .patch('/api/v1/auth/me')
+      .set('Authorization', `Bearer ${validToken}`)
+      .send({ activeAccountId: null });
+    expect(res.status).toBe(200);
+    expect(queries.updateActiveAccount).toHaveBeenCalledWith('uuid-1', null);
+  });
+
+  test('returns 400 when body is empty', async () => {
+    const res = await request(app)
+      .patch('/api/v1/auth/me')
+      .set('Authorization', `Bearer ${validToken}`)
+      .send({});
+    expect(res.status).toBe(400);
+  });
 });
 
 // ---------------------------------------------------------------------------

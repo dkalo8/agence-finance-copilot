@@ -29,7 +29,7 @@ async function getUserByEmail(email) {
 
 async function getUserById(id) {
   const { rows } = await pool.query(
-    'SELECT id, email, created_at, risk_tolerance, google_id IS NOT NULL AS has_google_auth FROM users WHERE id = $1',
+    'SELECT id, email, created_at, risk_tolerance, active_account_id, google_id IS NOT NULL AS has_google_auth FROM users WHERE id = $1',
     [id]
   );
   return rows[0] ?? null;
@@ -39,6 +39,13 @@ async function updateRiskTolerance(userId, riskTolerance) {
   await pool.query(
     'UPDATE users SET risk_tolerance = $2 WHERE id = $1',
     [userId, riskTolerance]
+  );
+}
+
+async function updateActiveAccount(userId, accountId) {
+  await pool.query(
+    'UPDATE users SET active_account_id = $2 WHERE id = $1',
+    [userId, accountId ?? null]
   );
 }
 
@@ -83,8 +90,15 @@ async function upsertTransactions(transactions) {
   }
 }
 
-async function getTransactionsByUserId(userIds) {
+async function getTransactionsByUserId(userIds, accountId = null) {
   const ids = Array.isArray(userIds) ? userIds : [userIds];
+  if (accountId) {
+    const { rows } = await pool.query(
+      'SELECT id, account_id, amount, merchant_name, category, date FROM transactions WHERE user_id = ANY($1::uuid[]) AND account_id = $2 ORDER BY date DESC',
+      [ids, accountId]
+    );
+    return rows;
+  }
   const { rows } = await pool.query(
     'SELECT id, account_id, amount, merchant_name, category, date FROM transactions WHERE user_id = ANY($1::uuid[]) ORDER BY date DESC',
     [ids]
@@ -295,6 +309,7 @@ module.exports = {
   linkGoogleId,
   updatePasswordHash,
   updateRiskTolerance,
+  updateActiveAccount,
   createAccount,
   getAccountsByUserId,
   upsertTransactions,

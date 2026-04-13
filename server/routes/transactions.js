@@ -41,8 +41,12 @@ function buildCategorySummary(transactions) {
 // GET /api/v1/transactions
 router.get('/', authMiddleware, async (req, res, next) => {
   try {
-    const userIds = await queries.getHouseholdMemberIds(req.userId);
-    const transactions = await queries.getTransactionsByUserId(userIds).catch(() => []);
+    const [userIds, user] = await Promise.all([
+      queries.getHouseholdMemberIds(req.userId),
+      queries.getUserById(req.userId).catch(() => null),
+    ]);
+    const activeAccountId = user?.active_account_id || null;
+    const transactions = await queries.getTransactionsByUserId(userIds, activeAccountId).catch(() => []);
     const categories = buildCategorySummary(transactions);
     return res.status(200).json({ transactions, categories });
   } catch (err) {

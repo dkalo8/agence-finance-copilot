@@ -197,6 +197,7 @@ router.get('/me', authMiddleware, async (req, res, next) => {
       createdAt: user.created_at,
       hasGoogleAuth: user.has_google_auth,
       riskTolerance: user.risk_tolerance || 'moderate',
+      activeAccountId: user.active_account_id || null,
     });
   } catch (err) {
     next(err);
@@ -207,13 +208,20 @@ const VALID_RISK_LEVELS = new Set(['conservative', 'moderate', 'aggressive']);
 
 // PATCH /api/v1/auth/me
 router.patch('/me', authMiddleware, async (req, res, next) => {
-  const { riskTolerance } = req.body;
-  if (!riskTolerance || !VALID_RISK_LEVELS.has(riskTolerance)) {
+  const { riskTolerance, activeAccountId } = req.body;
+  const hasRisk = riskTolerance !== undefined;
+  const hasAccount = 'activeAccountId' in req.body;
+
+  if (!hasRisk && !hasAccount) {
+    return res.status(400).json({ error: 'nothing to update' });
+  }
+  if (hasRisk && !VALID_RISK_LEVELS.has(riskTolerance)) {
     return res.status(400).json({ error: 'riskTolerance must be conservative, moderate, or aggressive' });
   }
   try {
-    await queries.updateRiskTolerance(req.userId, riskTolerance);
-    return res.status(200).json({ riskTolerance });
+    if (hasRisk) await queries.updateRiskTolerance(req.userId, riskTolerance);
+    if (hasAccount) await queries.updateActiveAccount(req.userId, activeAccountId ?? null);
+    return res.status(200).json({ ok: true });
   } catch (err) {
     next(err);
   }

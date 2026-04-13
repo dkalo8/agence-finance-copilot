@@ -21,6 +21,11 @@ export default function Settings() {
   const [savingRisk, setSavingRisk] = useState(false);
   const [riskMsg, setRiskMsg] = useState('');
 
+  // Active account
+  const [activeAccountId, setActiveAccountId] = useState(null);
+  const [savingAccount, setSavingAccount] = useState(false);
+  const [accountMsg, setAccountMsg] = useState('');
+
   // Invite form
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviting, setInviting] = useState(false);
@@ -29,7 +34,11 @@ export default function Settings() {
 
   function fetchAll() {
     return Promise.all([
-      getProfile().then(data => { setProfile(data); if (data?.riskTolerance) setRiskTolerance(data.riskTolerance); }).catch(() => {}),
+      getProfile().then(data => {
+        setProfile(data);
+        if (data?.riskTolerance) setRiskTolerance(data.riskTolerance);
+        setActiveAccountId(data?.activeAccountId || null);
+      }).catch(() => {}),
       getAccounts().then(accounts => setAccounts(accounts)).catch(() => {}),
       getHousehold().then(household => setHousehold(household)).catch(() => {}),
     ]).finally(() => setLoading(false));
@@ -51,6 +60,23 @@ export default function Settings() {
   }
 
   useEffect(() => { fetchAll(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function handleSaveAccount(id) {
+    setSavingAccount(true);
+    setAccountMsg('');
+    try {
+      await api.patch('/auth/me', { activeAccountId: id });
+      setActiveAccountId(id);
+      invalidate('profile');
+      invalidate('transactions');
+      setAccountMsg(id ? 'Active account set' : 'Cleared — showing all accounts');
+      setTimeout(() => setAccountMsg(''), 3000);
+    } catch {
+      setAccountMsg('Failed to update');
+    } finally {
+      setSavingAccount(false);
+    }
+  }
 
   async function handleCreateHousehold(e) {
     e.preventDefault();
@@ -276,29 +302,61 @@ export default function Settings() {
           )}
         </section>
 
-        {/* Linked bank accounts */}
+        {/* Linked bank accounts + active account selection */}
         <section className="expenses-section" style={{ marginBottom: '1.5rem' }}>
           <h3 className="dash-section-title">Linked Bank Accounts</h3>
           {!loading && accounts.length === 0 && (
             <p className="muted">No bank accounts connected. Use the dashboard to connect via Plaid.</p>
           )}
           {accounts.length > 0 && (
-            <table className="tx-table">
-              <thead>
-                <tr>
-                  <th>Account</th>
-                  <th className="right">Balance</th>
-                </tr>
-              </thead>
-              <tbody>
-                {accounts.map(a => (
-                  <tr key={a.id || a.plaid_account_id}>
-                    <td>{a.plaid_name || a.name || 'Bank Account'}</td>
-                    <td className="right">${parseFloat(a.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+            <>
+              <p className="muted" style={{ marginBottom: '0.75rem', fontSize: '0.85rem' }}>
+                Select an account to focus insights and transactions on that account only. Leave unselected to aggregate all.
+              </p>
+              <table className="tx-table" style={{ marginBottom: '0.75rem' }}>
+                <thead>
+                  <tr>
+                    <th style={{ width: 32 }}></th>
+                    <th>Account</th>
+                    <th className="right">Balance</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {accounts.map(a => {
+                    const id = a.id || a.plaid_account_id;
+                    const isActive = activeAccountId === id;
+                    return (
+                      <tr
+                        key={id}
+                        style={{ cursor: 'pointer', background: isActive ? 'var(--navy-50)' : undefined }}
+                        onClick={() => handleSaveAccount(isActive ? null : id)}
+                      >
+                        <td>
+                          <span style={{
+                            display: 'inline-block', width: 14, height: 14, borderRadius: '50%',
+                            border: `2px solid ${isActive ? 'var(--navy-600)' : 'var(--navy-300)'}`,
+                            background: isActive ? 'var(--navy-600)' : 'transparent',
+                            verticalAlign: 'middle',
+                          }} />
+                        </td>
+                        <td style={{ fontWeight: isActive ? 600 : 'normal' }}>{a.institution_name || a.plaid_name || 'Bank Account'}</td>
+                        <td className="right">${parseFloat(a.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+              {activeAccountId && (
+                <button
+                  onClick={() => handleSaveAccount(null)}
+                  disabled={savingAccount}
+                  style={{ fontSize: '0.8rem', color: 'var(--navy-400)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline' }}
+                >
+                  Clear selection (show all)
+                </button>
+              )}
+              {accountMsg && <p style={{ marginTop: '0.4rem', fontSize: '0.85rem', color: 'var(--gain)' }}>{accountMsg}</p>}
+            </>
           )}
         </section>
 

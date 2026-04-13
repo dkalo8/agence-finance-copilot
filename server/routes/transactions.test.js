@@ -15,6 +15,7 @@ const validToken = jwt.sign({ userId: 'uuid-1' }, 'test-secret');
 beforeEach(() => {
   jest.clearAllMocks();
   queries.getHouseholdMemberIds.mockResolvedValue(['uuid-1']);
+  queries.getUserById.mockResolvedValue({ id: 'uuid-1', active_account_id: null });
 });
 
 // Raw transactions fixture

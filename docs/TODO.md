@@ -39,13 +39,14 @@
 - [x] **Dashboard balance wiring** — after buying stock, dashboard should reflect updated equity, positions, and sparkline
 - [x] **Goal types** — add `goal_type` column (savings/growth/speculation); display type badge
 - [x] **Drag-and-drop goal ordering** — let user set goal priority via drag-and-drop on Goals page
-- [ ] **Investor risk profile** — settings field for risk tolerance (conservative/moderate/aggressive); feed into autopilot agent rules
+- [x] **Investor risk profile** — settings field for risk tolerance (conservative/moderate/aggressive); feed into autopilot agent rules
 - [ ] **Account selection** — if user has multiple Plaid or trading accounts, allow switching active account
 - [ ] **Household badge visibility** — "Household: X" badge on Dashboard should only show when household account is the active selected account (follow-up to Account Selection)
-- [ ] **About page** — user-friendly page explaining the app, multi-agent architecture, Agents + Finance = Agence vision, how each agent differentiates the platform, how to navigate the app
+- [ ] **About page** — user-friendly page explaining the app, multi-agent architecture, Agents + Finance = Agence vision, how each agent differentiates the platform, how to navigate the app (Question: Should it be to the left of Insights, to the right of Agence, or where would you suggest it lives?)
 
 ### 5. Phase 10: Documentation & Demo (deadline-sensitive)
 - [ ] **Add Plaid sandbox instructions to README.md** — graders need: how to link an account, sandbox credentials, what to expect after linking
+- [ ] **Recreate sprint history in docs/** — review project-memory/ and create sprint-3, sprint-4 (plus sprint-1 and sprint-2 from scratch if necessary --if they don't truly reflect the first two sprints based on what was achieved), … docs so graders can see full project progression
 - [ ] Write + publish blog post (Medium or dev.to) — 1,500+ words
 - [ ] Record 5–10 min screencast
 - [ ] Write 500-word individual reflection

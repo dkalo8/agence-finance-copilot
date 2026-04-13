@@ -24,12 +24,18 @@ router.get('/', authMiddleware, async (req, res, next) => {
       queries.getUserById(userId).catch(() => null),
     ]);
 
+    const activeAccountId = user?.active_account_id || null;
+    const filteredTransactions = activeAccountId
+      ? transactions.filter(tx => tx.account_id === activeAccountId)
+      : transactions;
+
     const userData = {
-      transactions,
+      transactions: filteredTransactions,
       accounts,
       goals,
       watchlist: watchlistItems,
       riskTolerance: user?.risk_tolerance || 'moderate',
+      activeAccountId,
     };
 
     // Build positions map for agents
