@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const { Resend } = require('resend');
 const nodemailer = require('nodemailer');
 const { OAuth2Client } = require('google-auth-library');
+const dns = require('dns').promises;
 const queries = require('../db/queries');
 const authMiddleware = require('../middleware/auth');
 
@@ -36,11 +37,18 @@ async function sendResetEmail(email, token) {
 
   // Gmail SMTP via nodemailer (preferred — works for any recipient)
   if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+    // Pre-resolve to IPv4 — Render free tier blocks IPv6 outbound, and
+    // nodemailer's `family:4` option is not reliably honored.
+    let smtpHost = 'smtp.gmail.com';
+    try {
+      const [ipv4] = await dns.resolve4('smtp.gmail.com');
+      smtpHost = ipv4;
+    } catch { /* fall through to hostname */ }
+
     const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
+      host: smtpHost,
       port: 587,
-      secure: false, // STARTTLS — Render blocks IPv6/465, 587+IPv4 works
-      family: 4,     // force IPv4
+      secure: false, // STARTTLS
       auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
       connectionTimeout: 8000,
       greetingTimeout: 8000,
