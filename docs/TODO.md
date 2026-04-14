@@ -65,12 +65,29 @@
 - [x] **About page** — hero + vision, 4-step how-it-works, 6 agent cards (icon/source/what/why), nav guide, tech stack. Public route `/about`, top-level nav link next to Insights.
 
 ### 5. Phase 10: Documentation & Demo (deadline-sensitive)
-- [ ] **Add Plaid sandbox instructions to README.md** — graders need: how to link an account, sandbox credentials, what to expect after linking
-- [ ] **Recreate sprint history in docs/** — review project-memory/ and create sprint-3, sprint-4 (plus sprint-1 and sprint-2 from scratch if necessary --if they don't truly reflect the first two sprints based on what was achieved), … docs so graders can see full project progression
-- [ ] Write + publish blog post (Medium or dev.to) — 1,500+ words
-- [ ] Record 5–10 min screencast
-- [ ] Write 500-word individual reflection
-- [ ] Submit showcase form
+
+#### 10A: Parallel Dev + Second PR (covers p3 rubric gaps)
+- [ ] **Create `feat/phase10-docs` worktree** — `git worktree add ../agence-phase10 -b feat/phase10-docs`; do all Phase 10 doc work on this branch (gives literal worktree evidence + 2nd feature branch)
+- [ ] **Open PR #7 from `feat/phase10-docs` → main** with explicit C.L.E.A.R. framework in PR body (Context / Logic / Evidence / Alternatives / Review sections); include AI disclosure; merge after blog + sprint docs are in
+
+#### 10B: Sprint Docs
+- [ ] **Create sprint-3.md** — covers UX/UI polish (phases 8A–8H: dashboard redesign, expenses, watchlist, chat, caching), aesthetic redesign (9B), anomaly detection, household accounts (9A); include planning, retro, velocity, AI disclosure, dated async standup notes
+- [ ] **Create sprint-4.md** — covers Google Auth (9C), news feed (9D), nav redesign (9E), password reset (9F), Step 5 polish backlog, 5b code review fixes (11 fixes), About page; include planning, retro, velocity, AI disclosure, dated async standup notes
+- [ ] **Review sprint-1.md + sprint-2.md** — verify they accurately reflect what was built; update if gaps (dates, velocity, standup notes)
+
+#### 10C: README
+- [ ] **Add Plaid sandbox instructions** — how to link an account, sandbox credentials (`user_good` / `pass_good`), what to expect after linking, how to trigger insights
+- [ ] **Add architecture diagram** (Mermaid) — agent layer → orchestrator → judge → frontend flow
+
+#### 10D: Blog Post
+- [ ] **Write + publish blog post** — 1,500+ words on Medium or dev.to; cover: the problem, multi-agent architecture, LLM-as-judge pattern, Claude Code workflow (skills/hooks/MCP/agents), key lessons learned
+
+#### 10E: Demo + Reflection
+- [ ] **Record 5–10 min screencast** — show: login → dashboard → insights → expenses → goals → portfolio → watchlist → settings; narrate agent outputs and Claude Code tooling
+- [ ] **Write 500-word individual reflection** — specific Claude Code insights, what worked, what didn't, how AI changed the dev workflow
+
+#### 10F: Submit
+- [ ] **Submit showcase form** — project name, Vercel URL, GitHub URL, thumbnail, video link, blog link
 
 ---
 
@@ -79,11 +96,11 @@
 | Category | Max | Est. Now | Achievable |
 |---|---|---|---|
 | Application Quality | 40 | 34 | 40 (Google Auth + News + nav) |
-| Claude Code Mastery | 55 | 47 | 50 (2 skills, hooks, .mcp.json, agent, 7/6 agents) |
-| Testing & TDD | 30 | 28 | 28 (192 unit/integration + E2E + 89% coverage) |
+| Claude Code Mastery | 55 | 47 | 53 (worktree evidence + 2nd PR w/ C.L.E.A.R. closes parallel dev gap) |
+| Testing & TDD | 30 | 28 | 28 (246 unit/integration + E2E + 89% coverage) |
 | CI/CD & Production | 35 | 30 | 32 (Actions + Vercel + Render + secrets) |
-| Team Process | 25 | 18 | 20 (Issues, PR, sprints, AI disclosure) |
-| Documentation & Demo | 15 | 5 | 13 (diagram done; blog + video pending) |
+| Team Process | 25 | 18 | 22 (sprint-3/4 + standup notes + 2 PRs w/ C.L.E.A.R.; solo → peer evals N/A) |
+| Documentation & Demo | 15 | 5 | 14 (README diagram + blog + video + reflection) |
 | **Total** | **200** | **~162** | **~183** |
 
 ---
