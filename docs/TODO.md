@@ -96,14 +96,18 @@
 
 - [x] **fast-check property tests (+3)** — 17 property-based tests in `server/agents/agents.property.test.js`; covers spendingAgent (5), anomalyAgent (5), goalsAgent (7); run via `npm test`
 - [x] **Stryker mutation testing (+3)** — `stryker.config.json` targets 3 core agents; `npm run mutation`; score ~67% (spendingAgent 85.7%, goalsAgent 67.2%, anomalyAgent 50.6%); HTML report at `reports/mutation/mutation.html`
-- [ ] **Agent SDK upgrade (+4)** — convert `POST /api/v1/chat` from single system-prompt call to tool-use agent loop with tools: `get_transactions`, `get_portfolio`, `get_goals`, `get_insights`
+- [x] **Agent SDK upgrade (+4)** — `POST /api/v1/chat` rewritten as tool-use agent loop; `TOOLS` array (get_transactions, get_portfolio, get_goals, get_watchlist, get_trades); `runAgentLoop()` with MAX_TOOL_ROUNDS=5; parallel tool execution via Promise.all; 10 tests passing. Rollback tag: `v1-pre-agent-sdk`
 
-### Next Steps (post-submission improvements)
+### Next Steps (remaining before Apr 21 submission)
 
 - [x] **duplicate_charge deep-link bug** — clicking insight now routes to `?amount=X&date=Y`; Expenses.js highlights ALL rows matching that amount+date, not just one txId. `anomalyAgent` insight now includes `date` field.
-- [ ] **Improve anomalyAgent mutation score** — add exact-message assertions in `anomalyAgent.test.js` to kill surviving string-template mutants; target: 70%+
-- [ ] **Agent SDK chat upgrade** — see bonus above (+4)
-- [ ] **Blog publish + screencast** — publish blog post to LinkedIn/Medium; record 5–10 min demo; submit showcase form
+- [ ] **Security gate #4: gitleaks/detect-secrets in CI** — currently 3 gates (npm audit + AI review + insight-reviewer); need ≥4; add `detect-secrets` scan step to `.github/workflows/ci.yml`
+- [ ] **OWASP Top 10 in CLAUDE.md** — rubric explicitly requires it under Security; add 5-line section
+- [ ] **Stryker re-run** — get updated score after anomalyAgent abs() fixes; target anomalyAgent ≥70%
+- [ ] **Verify C.L.E.A.R. PRs on GitHub** — confirm 2 PRs show writer/reviewer pattern + AI disclosure metadata in PR comments
+- [ ] **Blog publish** — draft in `docs/blog-post.md`; publish to LinkedIn/Medium; add URL to showcase form
+- [ ] **Screencast** — 5–10 min demo; login → dashboard → insights → expenses → goals → portfolio → watchlist
+- [ ] **Showcase form** — submit after video + blog live
 
 ---
 
@@ -114,10 +118,12 @@
 | Application Quality | 40 | 36 | React+Express vs Next.js spec; no Sentry monitoring |
 | Claude Code Mastery | 55 | 53 | Worktree ✅ 2 PRs w/ C.L.E.A.R. ✅ — minor gap: skill usage evidence could be richer |
 | Testing & TDD | 30 | 28 | TDD red-before-green not always explicit in commit messages |
-| CI/CD & Production | 35 | 32 | No tsc (JS project, N/A) + no Sentry/structured logging |
+| CI/CD & Production | 35 | 32 | Only 3 security gates (need 4); no Sentry/structured logging |
 | Team Process | 25 | 22 | Solo project — peer evaluations structurally N/A (rubric designed for pairs) |
 | Documentation & Demo | 15 | 9 | Sprint docs + README + reflection done ✅; blog + video still pending (-5) |
-| **Total** | **200** | **~180** | **~189 when blog published + video recorded** |
+| **Subtotal** | **200** | **~180** | |
+| **Bonus** | **+10** | **+10** | fast-check ✅ (+3) + Stryker ✅ (+3) + Agent SDK ✅ (+4) |
+| **Total** | **210** | **~190** | **~199 when blog published + video recorded** |
 
 ---
 

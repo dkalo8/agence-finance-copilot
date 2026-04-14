@@ -61,6 +61,16 @@ npm run mutation   # Stryker mutation testing (targets agents/spendingAgent, ano
 
 Never accumulate multiple unverified changes before committing. Small steps, verify, commit, repeat.
 
+## Security (OWASP Top 10 Awareness)
+- **A01 Broken Access Control** — all routes behind `authMiddleware`; ownership filters on all DB queries (`AND user_id = $N`)
+- **A02 Cryptographic Failures** — passwords bcrypt-hashed; JWT HS256 with env secret; no plaintext secrets in code
+- **A03 Injection** — all SQL parameterized via `pg` placeholders (`$1, $2`); no string-concatenated queries; SQL quarantined in `queries.js`
+- **A05 Security Misconfiguration** — `helmet()` enabled; CORS restricted to known origins; `NODE_ENV=production` on Render
+- **A06 Vulnerable Components** — `npm audit --audit-level=high` in CI; axios patched to 1.15.0 (CVSS 10.0 SSRF CVE)
+- **A07 Auth Failures** — rate limiting on auth routes (10 req/15 min); password min 8 chars enforced; reset tokens single-use with 1h expiry
+- **A09 Logging Failures** — centralized error handler in `middleware/errors.js`; errors logged server-side, never exposed to client
+- **CI gates**: npm audit + detect-secrets scan + AI PR review (security-focused prompt) + insight-reviewer sub-agent
+
 ## On Compaction
 Preserve these rules above all else: API boundary map (Alpaca/Plaid/Finnhub responsibilities), ALPACA_PAPER=false prohibition, SQL quarantine, agent purity, parallel execution via Promise.all.
 

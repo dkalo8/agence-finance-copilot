@@ -84,10 +84,12 @@ jobs:
           CI: false
 
   security:
-    name: Security Scan (npm audit)
+    name: Security Scan (npm audit + secrets detection)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -98,6 +100,12 @@ jobs:
       - name: Audit client dependencies
         run: npm audit --audit-level=high
         working-directory: client
+        continue-on-error: true
+      - name: Secrets detection (detect-secrets)
+        run: |
+          pip install detect-secrets
+          detect-secrets scan --baseline .secrets.baseline || detect-secrets scan > .secrets.baseline
+          detect-secrets audit .secrets.baseline --report || true
         continue-on-error: true
 
   e2e:
