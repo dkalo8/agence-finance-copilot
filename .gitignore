@@ -28,3 +28,4 @@ server/.omc/
 .vercel
 docs/blog-post.md
 docs/reflection.md
+server/reports/

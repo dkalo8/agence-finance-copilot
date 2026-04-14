@@ -8,7 +8,8 @@
     "test": "jest --runInBand --forceExit",
     "test:coverage": "jest --runInBand --forceExit --coverage",
     "test:watch": "jest --watch --runInBand --forceExit",
-    "lint": "eslint . --ignore-pattern node_modules/"
+    "lint": "eslint . --ignore-pattern node_modules/",
+    "mutation": "stryker run stryker.config.json"
   },
   "keywords": [],
   "author": "",
@@ -54,6 +55,8 @@
     }
   },
   "devDependencies": {
+    "@stryker-mutator/core": "^9.6.1",
+    "@stryker-mutator/jest-runner": "^9.6.1",
     "eslint": "^8.57.1",
     "fast-check": "^4.6.0",
     "jest": "^30.3.0",
