@@ -55,7 +55,7 @@ export default function Insights() {
           {insights.map((insight, i) => {
             const base = SOURCE_ROUTE[insight.source] || null;
             const route = base && insight.type === 'duplicate_charge' && insight.amount != null && insight.date
-              ? `${base}?amount=${insight.amount}&date=${insight.date}`
+              ? `${base}?amount=${insight.amount}&date=${String(insight.date).slice(0, 10)}`
               : base && insight.txId
                 ? `${base}?txId=${insight.txId}`
                 : base && insight.amount != null

@@ -159,7 +159,7 @@ export default function Expenses() {
                           ? tx.id === highlightTxId
                           : highlightAmount != null && highlightDate
                             ? Math.abs(parseFloat(tx.amount) - parseFloat(highlightAmount)) < 0.01 &&
-                              String(tx.date).slice(0, 10) === highlightDate
+                              String(tx.date).slice(0, 10) === String(highlightDate).slice(0, 10)
                             : highlightAmount != null &&
                               Math.abs(parseFloat(tx.amount) - parseFloat(highlightAmount)) < 0.01;
                         const setRef = isMatch && firstMatch;
