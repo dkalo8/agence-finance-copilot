@@ -88,7 +88,7 @@ export default function About() {
         {/* The problem */}
         <section style={{ marginBottom: '3rem' }}>
           <h2 className="section-heading">The Problem</h2>
-          <div className="insight-card" style={{ padding: '1.5rem 1.75rem' }}>
+          <div className="insight-card" style={{ padding: '1.5rem 1.75rem', flexDirection: 'column', alignItems: 'flex-start' }}>
             <p style={{ margin: 0, lineHeight: 1.8, color: 'var(--text-secondary)' }}>
               Robinhood and Rocket Money both exist — but they don't talk to each other.
               Your spending behavior and your investment behavior are deeply connected,
@@ -142,7 +142,7 @@ export default function About() {
             gap: '1rem',
           }}>
             {AGENTS.map(agent => (
-              <div key={agent.name} className="insight-card" style={{ padding: '1.25rem 1.4rem', overflow: 'hidden' }}>
+              <div key={agent.name} className="insight-card" style={{ padding: '1.25rem 1.4rem', flexDirection: 'column', alignItems: 'flex-start', gap: '0.5rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.6rem' }}>
                   <span style={{ fontSize: '1.4rem' }}>{agent.icon}</span>
                   <div>
