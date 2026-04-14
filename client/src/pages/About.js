@@ -123,8 +123,8 @@ export default function About() {
                   fontWeight: 700,
                   fontSize: '0.95rem',
                   color: 'var(--navy-600)',
-                  whiteSpace: 'nowrap',
-                  minWidth: 130,
+                  minWidth: 200,
+                  flexShrink: 0,
                   paddingTop: 2,
                 }}>{step}</span>
                 <span style={{ color: 'var(--text-secondary)', lineHeight: 1.65 }}>{desc}</span>
@@ -138,11 +138,11 @@ export default function About() {
           <h2 className="section-heading">The Six Agents</h2>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
             gap: '1rem',
           }}>
             {AGENTS.map(agent => (
-              <div key={agent.name} className="insight-card" style={{ padding: '1.25rem 1.4rem' }}>
+              <div key={agent.name} className="insight-card" style={{ padding: '1.25rem 1.4rem', overflow: 'hidden' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.6rem' }}>
                   <span style={{ fontSize: '1.4rem' }}>{agent.icon}</span>
                   <div>
