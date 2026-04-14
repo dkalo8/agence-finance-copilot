@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCachedInsights } from '../api/insightsCache';
+import { getCachedInsights, invalidateInsightsCache } from '../api/insightsCache';
 import AppNav from '../components/AppNav';
 
 const SOURCE_ROUTE = {
@@ -19,18 +19,33 @@ export default function Insights() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
+  const loadInsights = useCallback((force = false) => {
+    setLoading(true);
+    setError('');
+    if (force) invalidateInsightsCache();
     getCachedInsights()
-      .then(insights => setInsights(insights))
+      .then(ins => setInsights(ins))
       .catch(err => setError(err.response?.data?.error || 'Failed to load insights'))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => { loadInsights(); }, [loadInsights]);
 
   return (
     <div className="page">
       <AppNav />
       <main>
-        <div className="page-header"><h2>Insights</h2></div>
+        <div className="page-header">
+          <h2>Insights</h2>
+          <button
+            className="period-btn"
+            onClick={() => loadInsights(true)}
+            disabled={loading}
+            style={{ marginLeft: 'auto' }}
+          >
+            {loading ? 'Analyzing…' : '↻ Refresh'}
+          </button>
+        </div>
         {loading && <p>Analyzing your finances…</p>}
         {error && <p className="error">{error}</p>}
         {!loading && !error && insights.length === 0 && (
