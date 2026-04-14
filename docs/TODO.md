@@ -68,7 +68,7 @@
 
 #### 10A: Parallel Dev + Second PR (covers p3 rubric gaps)
 - [x] **Create `feat/phase10-docs` worktree** — `git worktree add ../agence-phase10 -b feat/phase10-docs`; do all Phase 10 doc work on this branch (gives literal worktree evidence + 2nd feature branch)
-- [ ] **Merge PR #7** (`feat/phase10-docs` → main) — open at github.com/dkalo8/agence-finance-copilot/pull/7; merge after blog + reflection added to branch
+- [x] **Merge PR #7** (`feat/phase10-docs` → main) — open at github.com/dkalo8/agence-finance-copilot/pull/7; merge after blog + reflection added to branch
 
 #### 10B: Sprint Docs
 - [x] **Create sprint-3.md** — phases 8A–8H, 9A household, 9B aesthetic redesign; planning, retro, 3 standup entries, AI disclosure
@@ -81,7 +81,7 @@
 
 #### 10D: Blog Post
 - [x] **Draft written** — `docs/blog-post.md` in `feat/phase10-docs` branch; 1,600+ words covering problem, architecture, LLM-as-judge, Claude Code workflow, caching lesson, marketContextAgent incident
-- [ ] **Publish** — copy to Medium or dev.to; add published URL to PR #7 description and showcase form
+- [ ] **Publish** — in LinkedIn; add published URL to PR #7 description and showcase form
 
 #### 10E: Demo + Reflection
 - [ ] **Record 5–10 min screencast** — show: login → dashboard → insights → expenses → goals → portfolio → watchlist → settings; narrate agent outputs and Claude Code tooling
@@ -94,15 +94,15 @@
 
 ## Rubric Scorecard
 
-| Category | Max | Est. Now | Achievable |
+| Category | Max | Est. Now | Gap / Why Not Max |
 |---|---|---|---|
-| Application Quality | 40 | 34 | 40 (Google Auth + News + nav) |
-| Claude Code Mastery | 55 | 47 | 53 (worktree evidence + 2nd PR w/ C.L.E.A.R. closes parallel dev gap) |
-| Testing & TDD | 30 | 28 | 28 (246 unit/integration + E2E + 89% coverage) |
-| CI/CD & Production | 35 | 30 | 32 (Actions + Vercel + Render + secrets) |
-| Team Process | 25 | 18 | 22 (sprint-3/4 + standup notes + 2 PRs w/ C.L.E.A.R.; solo → peer evals N/A) |
-| Documentation & Demo | 15 | 5 | 14 (README diagram + blog + video + reflection) |
-| **Total** | **200** | **~162** | **~183** |
+| Application Quality | 40 | 36 | React+Express vs Next.js spec; no Sentry monitoring |
+| Claude Code Mastery | 55 | 53 | Worktree ✅ 2 PRs w/ C.L.E.A.R. ✅ — minor gap: skill usage evidence could be richer |
+| Testing & TDD | 30 | 28 | TDD red-before-green not always explicit in commit messages |
+| CI/CD & Production | 35 | 32 | No tsc (JS project, N/A) + no Sentry/structured logging |
+| Team Process | 25 | 22 | Solo project — peer evaluations structurally N/A (rubric designed for pairs) |
+| Documentation & Demo | 15 | 9 | Sprint docs + README + reflection done ✅; blog + video still pending (-5) |
+| **Total** | **200** | **~180** | **~189 when blog published + video recorded** |
 
 ---
 
