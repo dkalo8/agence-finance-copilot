@@ -13,14 +13,21 @@ const SOURCE_ROUTE = {
   watchlist: '/watchlist',
 };
 
-const SEVERITIES = ['all', 'high', 'medium', 'low', 'info'];
+const FILTERS = [
+  { key: 'priority', label: 'Priority' },
+  { key: 'high',     label: 'High' },
+  { key: 'medium',   label: 'Medium' },
+  { key: 'info',     label: 'Info' },
+];
+
+function getSev(ins) { return ins.severity || 'info'; }
 
 export default function Insights() {
   const navigate = useNavigate();
   const [insights, setInsights] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState('priority');
 
   const loadInsights = useCallback((force = false) => {
     setLoading(true);
@@ -54,21 +61,53 @@ export default function Insights() {
         {!loading && !error && insights.length === 0 && (
           <p>No insights yet. Connect your accounts to get started.</p>
         )}
-        {!loading && !error && insights.length > 0 && (
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
-            {SEVERITIES.map(s => (
-              <button
-                key={s}
-                className={`period-btn${filter === s ? ' period-btn--active' : ''}`}
-                onClick={() => setFilter(s)}
-              >
-                {s.charAt(0).toUpperCase() + s.slice(1)}
-              </button>
-            ))}
-          </div>
-        )}
-        <ul className="insight-list">
-          {insights.filter(ins => filter === 'all' || (ins.severity || 'info') === filter).map((insight, i) => {
+        {!loading && !error && insights.length > 0 && (() => {
+          const counts = {
+            priority: insights.filter(ins => ['high','medium','warning'].includes(getSev(ins))).length,
+            high:     insights.filter(ins => getSev(ins) === 'high').length,
+            medium:   insights.filter(ins => ['medium','warning'].includes(getSev(ins))).length,
+            info:     insights.filter(ins => getSev(ins) === 'info').length,
+          };
+          return (
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
+              {FILTERS.map(f => (
+                <button
+                  key={f.key}
+                  className={`period-btn${filter === f.key ? ' period-btn--active' : ''}`}
+                  onClick={() => setFilter(f.key)}
+                >
+                  {f.label}
+                  {counts[f.key] > 0 && (
+                    <span style={{
+                      marginLeft: '0.4rem',
+                      background: filter === f.key ? 'rgba(255,255,255,0.25)' : 'var(--navy-200)',
+                      color: filter === f.key ? '#fff' : 'var(--navy-600)',
+                      borderRadius: 10,
+                      fontSize: '0.7rem',
+                      fontWeight: 700,
+                      padding: '0 0.4rem',
+                      lineHeight: '1.4',
+                      display: 'inline-block',
+                    }}>{counts[f.key]}</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          );
+        })()}
+        {!loading && !error && (() => {
+          const visible = insights.filter(ins => {
+            const s = getSev(ins);
+            if (filter === 'priority') return ['high','medium','warning'].includes(s);
+            if (filter === 'medium') return ['medium','warning'].includes(s);
+            return s === filter;
+          });
+          if (visible.length === 0 && insights.length > 0) {
+            return <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No {filter} insights right now.</p>;
+          }
+          return (
+            <ul className="insight-list">
+              {visible.map((insight, i) => {
             const base = SOURCE_ROUTE[insight.source] || null;
             const route = base && insight.type === 'duplicate_charge' && insight.amount != null && insight.date
               ? `${base}?amount=${insight.amount}&date=${String(insight.date).slice(0, 10)}`
@@ -98,8 +137,10 @@ export default function Insights() {
                 </div>
               </li>
             );
-          })}
-        </ul>
+              })}
+            </ul>
+          );
+        })()}
       </main>
     </div>
   );

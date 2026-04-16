@@ -3,42 +3,72 @@ import AppNav from '../components/AppNav';
 const AGENTS = [
   {
     name: 'Spending Agent',
-    abbr: 'SP',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--navy-600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+        <line x1="1" y1="10" x2="23" y2="10"/>
+      </svg>
+    ),
     source: 'Plaid',
     what: 'Categorizes every transaction and compares month-over-month. Flags budget overruns before they snowball.',
     why: 'Most budgeting apps show you what happened. Agence tells you what it means.',
   },
   {
     name: 'Anomaly Agent',
-    abbr: 'AN',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--navy-600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+    ),
     source: 'Plaid',
     what: 'Detects unusual charges — large one-offs, duplicate transactions, and repeated identical amounts.',
     why: 'Catches fraud signals and billing errors you\'d miss scrolling a transaction list.',
   },
   {
     name: 'Goals Agent',
-    abbr: 'GO',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--navy-600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+        <line x1="4" y1="22" x2="4" y2="15"/>
+      </svg>
+    ),
     source: 'Plaid',
     what: 'Tracks pace toward each savings goal. Projects completion date based on current contribution rate.',
     why: 'Turns abstract targets into a live countdown with a clear verdict: on track or off.',
   },
   {
     name: 'Portfolio Agent',
-    abbr: 'PO',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--navy-600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+        <polyline points="17 6 23 6 23 12"/>
+      </svg>
+    ),
     source: 'Alpaca',
     what: 'Analyzes position concentration, unrealized P&L, and portfolio composition against your risk profile.',
     why: 'Surfaces the risks hiding inside a healthy-looking total return number.',
   },
   {
     name: 'Market Context Agent',
-    abbr: 'MX',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--navy-600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="2" y1="12" x2="22" y2="12"/>
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+      </svg>
+    ),
     source: 'Alpaca + Finnhub',
     what: 'Pulls real-time price moves and news sentiment for every ticker on your watchlist.',
     why: 'Connects market events to your actual holdings — not just a generic feed.',
   },
   {
     name: 'Autopilot Agent',
-    abbr: 'AU',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--navy-600)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+      </svg>
+    ),
     source: 'Alpaca',
     what: 'Evaluates your rule-based triggers against live market conditions and executes paper trades automatically.',
     why: 'Lets you test trading strategies in a risk-free paper environment without manual order entry.',
@@ -153,12 +183,11 @@ export default function About() {
               <div key={agent.name} className="insight-card" style={{ padding: '1.25rem 1.4rem', flexDirection: 'column', alignItems: 'flex-start', gap: '0.5rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.6rem' }}>
                   <span style={{
-                    width: 32, height: 32, borderRadius: '50%',
-                    background: 'var(--navy-200)', color: 'var(--navy-700)',
+                    width: 34, height: 34, borderRadius: '50%',
+                    background: 'var(--navy-100)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontWeight: 700, fontSize: '0.72rem', flexShrink: 0,
-                    fontFamily: 'var(--font-body)',
-                  }}>{agent.abbr}</span>
+                    flexShrink: 0,
+                  }}>{agent.icon}</span>
                   <div>
                     <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.95rem' }}>{agent.name}</div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>via {agent.source}</div>
