@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import AppNav from '../components/AppNav';
+import TickerAutocomplete from '../components/TickerAutocomplete';
 import api from '../api/client';
 import { getWatchlist, invalidate, invalidateAllNews, getNews } from '../api/apiCache';
 import { invalidateInsightsCache } from '../api/insightsCache';
@@ -115,13 +116,14 @@ export default function Watchlist() {
 
         <section className="expenses-section">
           <form onSubmit={handleAdd} className="watchlist-add-form">
-            <input
-              type="text"
-              placeholder="Add ticker (e.g. AAPL)"
+            <TickerAutocomplete
               value={input}
-              onChange={e => setInput(e.target.value.toUpperCase())}
-              maxLength={10}
-              className="watchlist-input"
+              onChange={setInput}
+              placeholder="Add ticker (e.g. AAPL)"
+              style={{ flex: 1, maxWidth: 220 }}
+              inputClassName="watchlist-input"
+              inputStyle={{ width: '100%' }}
+              disabled={adding}
             />
             <button type="submit" disabled={adding || !input.trim()} className="watchlist-add-btn">
               {adding ? 'Adding…' : '+ Add'}

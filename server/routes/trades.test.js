@@ -68,10 +68,11 @@ describe('POST /api/v1/trades', () => {
     expect(res.status).toBe(400);
   });
 
-  test('returns 201 with orderId after successful trade', async () => {
+  test('returns 201 with orderId and queued:false when order fills immediately', async () => {
     alpacaService.placeOrder.mockResolvedValue({
       id: 'alpaca-order-123',
       filled_avg_price: '150.00',
+      status: 'filled',
     });
     queries.createTrade.mockResolvedValue({ id: 'trade-db-uuid' });
 
@@ -82,9 +83,27 @@ describe('POST /api/v1/trades', () => {
 
     expect(res.status).toBe(201);
     expect(res.body).toHaveProperty('orderId', 'alpaca-order-123');
+    expect(res.body).toHaveProperty('queued', false);
     expect(queries.createTrade).toHaveBeenCalledWith(
       'uuid-1', 'AAPL', 'buy', 5, 150.00, 'alpaca-order-123'
     );
+  });
+
+  test('returns 201 with queued:true when order is accepted but not filled (after-hours)', async () => {
+    alpacaService.placeOrder.mockResolvedValue({
+      id: 'alpaca-order-456',
+      filled_avg_price: '0',
+      status: 'accepted',
+    });
+    queries.createTrade.mockResolvedValue({});
+
+    const res = await request(app)
+      .post('/api/v1/trades')
+      .set('Authorization', `Bearer ${validToken}`)
+      .send({ ticker: 'AAPL', action: 'buy', quantity: 1 });
+
+    expect(res.status).toBe(201);
+    expect(res.body).toHaveProperty('queued', true);
   });
 
   test('uses snapshot price when filled_avg_price is 0', async () => {

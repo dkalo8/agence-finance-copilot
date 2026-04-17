@@ -17,6 +17,7 @@ const watchlistRouter = require('./routes/watchlist');
 const chatRouter = require('./routes/chat');
 const householdRouter = require('./routes/household');
 const newsRouter = require('./routes/news');
+const tickersRouter = require('./routes/tickers');
 const errorHandler = require('./middleware/errors');
 const { runMigrations } = require('./db/migrate');
 
@@ -68,6 +69,7 @@ app.use('/api/v1/watchlist', watchlistRouter);
 app.use('/api/v1/chat', apiLimiter, chatRouter);
 app.use('/api/v1/household', householdRouter);
 app.use('/api/v1/news', newsRouter);
+app.use('/api/v1/tickers', tickersRouter);
 
 // Centralized error handler (must be last)
 app.use(errorHandler);

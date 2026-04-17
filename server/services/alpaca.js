@@ -45,4 +45,22 @@ async function getPortfolioHistory(period = '1M') {
   return alpaca.getPortfolioHistory({ period: alpacaPeriod, timeframe: '1D' });
 }
 
-module.exports = { getPositions, getAccount, getSnapshots, placeOrder, getPortfolioHistory };
+let _assetsCache = null;
+let _assetsCacheTime = 0;
+const ASSETS_TTL_MS = 6 * 60 * 60 * 1000;
+
+async function searchAssets(q) {
+  const now = Date.now();
+  if (!_assetsCache || now - _assetsCacheTime > ASSETS_TTL_MS) {
+    const raw = await alpaca.getAssets({ status: 'active', asset_class: 'us_equity' });
+    _assetsCache = raw.filter(a => a.tradable).map(a => ({ symbol: a.symbol, name: a.name || '' }));
+    _assetsCacheTime = now;
+  }
+  const upper = q.toUpperCase();
+  return _assetsCache
+    .filter(a => a.symbol.startsWith(upper))
+    .sort((a, b) => a.symbol.length - b.symbol.length)
+    .slice(0, 10);
+}
+
+module.exports = { getPositions, getAccount, getSnapshots, placeOrder, getPortfolioHistory, searchAssets };

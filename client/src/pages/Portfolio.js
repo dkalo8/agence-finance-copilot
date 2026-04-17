@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import api from '../api/client';
+import TickerAutocomplete from '../components/TickerAutocomplete';
 import { getPortfolio, getTradeHistory, invalidate } from '../api/apiCache';
 import { invalidateInsightsCache } from '../api/insightsCache';
 import AppNav from '../components/AppNav';
@@ -75,7 +76,11 @@ export default function Portfolio() {
       if (stopPrice) body.stopPrice = parseFloat(stopPrice);
 
       const { data } = await api.post('/trades', body);
-      setTradeSuccess(`Order placed (ID: ${data.orderId})`);
+      setTradeSuccess(
+        data.queued
+          ? `Order queued — market closed, executes at next open (ID: ${data.orderId})`
+          : `Order placed (ID: ${data.orderId})`
+      );
       setTicker('');
       setQuantity('');
       setLimitPrice('');
@@ -221,11 +226,12 @@ export default function Portfolio() {
         {/* Trade form */}
         <h3 style={{ margin: '0 0 0.75rem', fontSize: '1rem', fontWeight: 600, color: '#0f172a' }}>Place a Paper Trade</h3>
         <form onSubmit={handleTrade} style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', alignItems: 'flex-end', maxWidth: 600 }}>
-          <input
-            placeholder="Ticker (e.g. AAPL)"
+          <TickerAutocomplete
             value={ticker}
-            onChange={e => setTicker(e.target.value)}
-            style={{ flex: '1 1 120px', padding: '0.6rem 0.8rem', border: '1px solid #cbd5e1', borderRadius: 8, fontSize: '0.9rem' }}
+            onChange={setTicker}
+            placeholder="Ticker (e.g. AAPL)"
+            style={{ flex: '1 1 120px' }}
+            inputStyle={{ width: '100%', padding: '0.6rem 0.8rem', border: '1px solid #cbd5e1', borderRadius: 8, fontSize: '0.9rem' }}
           />
           <select
             value={action}

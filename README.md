@@ -141,23 +141,14 @@ flowchart TD
 | Backend API | https://cs7180-project3-agence.onrender.com |
 | Health check | https://cs7180-project3-agence.onrender.com/health |
 
-## Connecting a Bank Account (Plaid Sandbox)
+## Demo Login
 
-Agence uses Plaid in sandbox mode — no real bank credentials required.
+A pre-configured account is available for graders and reviewers — bank accounts and paper trading are already connected, data is pre-populated:
 
-1. Log in and go to **Account → Settings**
-2. Click **Connect a bank account** — the Plaid Link modal opens
-3. Search for any institution (e.g. "Chase") and select it
-4. Enter the sandbox credentials:
-   - **Username:** `user_good`
-   - **Password:** `pass_good` <!-- pragma: allowlist secret -->
-5. Select any account and complete the flow
-6. Return to Settings — your linked accounts will appear
-7. Optionally select an **active account** to filter transactions and insights to that account only
+- **Email:** `kalo13@hotmail.com`
+- **Password:** `Agence123!` <!-- pragma: allowlist secret -->
 
-After linking, go to **Insights** and click **Refresh** to run all 6 agents against your sandbox transactions. The Dashboard will reflect your balances and the AI insight feed will populate within a few seconds.
-
-> Note: Plaid sandbox transactions are pre-populated test data — they won't reflect any real spending.
+Log in and navigate to **Insights → Refresh** to run all agents. The Dashboard, Expenses, Goals, Portfolio, and Watchlist pages will reflect live data.
 
 ## Connecting a Paper Trading Account (Alpaca)
 

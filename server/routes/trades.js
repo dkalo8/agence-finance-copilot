@@ -36,7 +36,8 @@ router.post('/', authMiddleware, async (req, res, next) => {
 
     await queries.createTrade(req.userId, ticker, action, quantity, price, order.id);
 
-    return res.status(201).json({ orderId: order.id });
+    const queued = order.status !== 'filled';
+    return res.status(201).json({ orderId: order.id, queued });
   } catch (err) {
     // Extract Alpaca's error message rather than forwarding upstream status codes
     const alpacaMsg =
