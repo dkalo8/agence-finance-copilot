@@ -18,6 +18,7 @@ const validToken = jwt.sign({ userId: 'uuid-1' }, 'test-secret');
 beforeEach(() => {
   jest.clearAllMocks();
   alpacaService.getSnapshots.mockResolvedValue({});
+  alpacaService.getClock.mockResolvedValue({ is_open: true });
 });
 
 // ---------------------------------------------------------------------------
@@ -89,7 +90,8 @@ describe('POST /api/v1/trades', () => {
     );
   });
 
-  test('returns 201 with queued:true when order is accepted but not filled (after-hours)', async () => {
+  test('returns 201 with queued:true when market is closed (after-hours)', async () => {
+    alpacaService.getClock.mockResolvedValue({ is_open: false });
     alpacaService.placeOrder.mockResolvedValue({
       id: 'alpaca-order-456',
       filled_avg_price: '0',

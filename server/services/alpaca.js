@@ -63,4 +63,8 @@ async function searchAssets(q) {
     .slice(0, 10);
 }
 
-module.exports = { getPositions, getAccount, getSnapshots, placeOrder, getPortfolioHistory, searchAssets };
+async function getClock() {
+  return alpaca.getClock();
+}
+
+module.exports = { getPositions, getAccount, getSnapshots, placeOrder, getPortfolioHistory, searchAssets, getClock };

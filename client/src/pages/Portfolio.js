@@ -78,8 +78,8 @@ export default function Portfolio() {
       const { data } = await api.post('/trades', body);
       setTradeSuccess(
         data.queued
-          ? `Order queued — market closed, executes at next open (ID: ${data.orderId})`
-          : `Order placed (ID: ${data.orderId})`
+          ? 'Order queued — market closed, executes at next open.'
+          : 'Order placed.'
       );
       setTicker('');
       setQuantity('');
@@ -169,7 +169,10 @@ export default function Portfolio() {
                   {positions.map(pos => (
                     <tr key={pos.ticker}>
                       <td className="ticker">{pos.ticker}</td>
-                      <td>{pos.qty}</td>
+                      <td>
+                        {pos.qty < 0 && <span style={{ color: '#e05c5c', fontWeight: 700, fontSize: '0.7rem', marginRight: 4, letterSpacing: '0.03em' }}>SHORT</span>}
+                        {Math.abs(pos.qty)}
+                      </td>
                       <td>${pos.avgCost.toFixed(2)}</td>
                       <td>${pos.currentPrice.toFixed(2)}</td>
                       <td>${pos.marketValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
@@ -204,6 +207,7 @@ export default function Portfolio() {
                     <th>Qty</th>
                     <th>Price</th>
                     <th>Total</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -215,6 +219,9 @@ export default function Portfolio() {
                       <td>{t.quantity}</td>
                       <td>${parseFloat(t.price || 0).toFixed(2)}</td>
                       <td>${(parseFloat(t.price || 0) * t.quantity).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                      <td title={t.alpaca_order_id || ''} style={{ cursor: t.alpaca_order_id ? 'help' : 'default', color: '#94a3b8', fontSize: '0.8rem' }}>
+                        {t.alpaca_order_id ? 'ⓘ' : ''}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

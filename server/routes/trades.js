@@ -20,7 +20,10 @@ router.post('/', authMiddleware, async (req, res, next) => {
   }
 
   try {
-    const order = await alpacaService.placeOrder(ticker, action, quantity, orderType, limitPrice, stopPrice);
+    const [order, clock] = await Promise.all([
+      alpacaService.placeOrder(ticker, action, quantity, orderType, limitPrice, stopPrice),
+      alpacaService.getClock(),
+    ]);
     let price = parseFloat(order.filled_avg_price) || 0;
 
     // Paper market orders fill asynchronously — filled_avg_price is 0 at submission.
@@ -36,7 +39,7 @@ router.post('/', authMiddleware, async (req, res, next) => {
 
     await queries.createTrade(req.userId, ticker, action, quantity, price, order.id);
 
-    const queued = order.status !== 'filled';
+    const queued = !clock.is_open;
     return res.status(201).json({ orderId: order.id, queued });
   } catch (err) {
     // Extract Alpaca's error message rather than forwarding upstream status codes

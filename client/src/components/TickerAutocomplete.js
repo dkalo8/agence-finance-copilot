@@ -57,7 +57,8 @@ export default function TickerAutocomplete({ value, onChange, placeholder, class
       />
       {open && (
         <ul style={{
-          position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 100,
+          position: 'absolute', top: '100%', left: 0, zIndex: 100,
+          minWidth: 340,
           background: '#fff', border: '1px solid #cbd5e1', borderRadius: 8,
           boxShadow: '0 4px 12px rgba(0,0,0,0.1)', margin: 0, padding: 0,
           listStyle: 'none', maxHeight: 280, overflowY: 'auto',
@@ -76,8 +77,8 @@ export default function TickerAutocomplete({ value, onChange, placeholder, class
               onMouseEnter={e => e.currentTarget.style.background = '#f1f5f9'}
               onMouseLeave={e => e.currentTarget.style.background = ''}
             >
-              <span style={{ fontWeight: 700, color: '#0f172a', minWidth: 60 }}>{t.symbol}</span>
-              <span style={{ color: '#64748b' }}>{t.name}</span>
+              <span style={{ fontWeight: 700, color: '#0f172a', minWidth: 60, flexShrink: 0 }}>{t.symbol}</span>
+              <span style={{ color: '#64748b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.name}</span>
             </li>
           ))}
         </ul>
