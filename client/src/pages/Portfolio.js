@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Fragment } from 'react';
 import api from '../api/client';
 import TickerAutocomplete from '../components/TickerAutocomplete';
 import { getPortfolio, getTradeHistory, invalidate } from '../api/apiCache';
@@ -25,6 +25,7 @@ export default function Portfolio() {
   const [tradeError, setTradeError] = useState('');
   const [tradeSuccess, setTradeSuccess] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [expandedTradeId, setExpandedTradeId] = useState(null);
   const [copiedOrderId, setCopiedOrderId] = useState(null);
 
   function fetchPortfolio() {
@@ -212,31 +213,52 @@ export default function Portfolio() {
                   </tr>
                 </thead>
                 <tbody>
-                  {trades.map(t => (
-                    <tr key={t.id}>
-                      <td className="tx-date">{String(t.created_at || t.date || '').slice(0, 10)}</td>
-                      <td className="ticker">{t.ticker}</td>
-                      <td className={t.action === 'buy' ? 'gain' : 'loss'} style={{ fontWeight: 600, textTransform: 'uppercase' }}>{t.action}</td>
-                      <td>{t.quantity}</td>
-                      <td>${parseFloat(t.price || 0).toFixed(2)}</td>
-                      <td>${(parseFloat(t.price || 0) * t.quantity).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
-                      <td style={{ fontSize: '0.8rem' }}>
-                        {t.alpaca_order_id && (
-                          <button
-                            title={t.alpaca_order_id}
-                            onClick={() => {
-                              navigator.clipboard.writeText(t.alpaca_order_id);
-                              setCopiedOrderId(t.id);
-                              setTimeout(() => setCopiedOrderId(null), 1500);
-                            }}
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: copiedOrderId === t.id ? '#16a34a' : '#94a3b8', fontSize: '0.8rem', padding: 0 }}
-                          >
-                            {copiedOrderId === t.id ? '✓' : 'ⓘ'}
-                          </button>
+                  {trades.map(t => {
+                    const isExpanded = expandedTradeId === t.id;
+                    const ts = t.created_at ? new Date(t.created_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' }) : '—';
+                    return (
+                      <Fragment key={t.id}>
+                        <tr>
+                          <td className="tx-date">{String(t.created_at || t.date || '').slice(0, 10)}</td>
+                          <td className="ticker">{t.ticker}</td>
+                          <td className={t.action === 'buy' ? 'gain' : 'loss'} style={{ fontWeight: 600, textTransform: 'uppercase' }}>{t.action}</td>
+                          <td>{t.quantity}</td>
+                          <td>${parseFloat(t.price || 0).toFixed(2)}</td>
+                          <td>${(parseFloat(t.price || 0) * t.quantity).toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                          <td style={{ fontSize: '0.8rem' }}>
+                            <button
+                              onClick={() => setExpandedTradeId(isExpanded ? null : t.id)}
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', color: isExpanded ? '#0f172a' : '#94a3b8', fontSize: '0.8rem', padding: 0 }}
+                              title="Trade details"
+                            >ⓘ</button>
+                          </td>
+                        </tr>
+                        {isExpanded && (
+                          <tr>
+                            <td colSpan={7} style={{ background: '#f8fafc', padding: '0.75rem 1rem', borderBottom: '1px solid #e2e8f0' }}>
+                              <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', fontSize: '0.8rem', color: '#334155' }}>
+                                <div><span style={{ color: '#94a3b8', display: 'block', marginBottom: 2 }}>Time Placed</span>{ts}</div>
+                                <div><span style={{ color: '#94a3b8', display: 'block', marginBottom: 2 }}>Side</span>{t.action.toUpperCase()}</div>
+                                <div><span style={{ color: '#94a3b8', display: 'block', marginBottom: 2 }}>Quantity</span>{t.quantity} shares</div>
+                                <div><span style={{ color: '#94a3b8', display: 'block', marginBottom: 2 }}>Exec. Price</span>${parseFloat(t.price || 0).toFixed(2)}</div>
+                                <div><span style={{ color: '#94a3b8', display: 'block', marginBottom: 2 }}>Total Value</span>${(parseFloat(t.price || 0) * t.quantity).toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
+                                {t.alpaca_order_id && (
+                                  <div>
+                                    <span style={{ color: '#94a3b8', display: 'block', marginBottom: 2 }}>Order ID</span>
+                                    <span style={{ fontFamily: 'monospace', fontSize: '0.75rem' }}>{t.alpaca_order_id}</span>
+                                    <button
+                                      onClick={() => { navigator.clipboard.writeText(t.alpaca_order_id); setCopiedOrderId(t.id); setTimeout(() => setCopiedOrderId(null), 1500); }}
+                                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: copiedOrderId === t.id ? '#16a34a' : '#94a3b8', fontSize: '0.75rem', marginLeft: 6, padding: 0 }}
+                                    >{copiedOrderId === t.id ? '✓ Copied' : 'Copy'}</button>
+                                  </div>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
                         )}
-                      </td>
-                    </tr>
-                  ))}
+                      </Fragment>
+                    );
+                  })}
                 </tbody>
               </table>
             )}
