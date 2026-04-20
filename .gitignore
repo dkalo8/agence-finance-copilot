@@ -27,7 +27,6 @@ video-demo-script.md
 .omc/
 server/.omc/
 .vercel
-docs/blog-post.md
 docs/reflection.md
 server/reports/
 server/.stryker-tmp/
