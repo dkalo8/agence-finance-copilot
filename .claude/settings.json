@@ -21,6 +21,16 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"/Users/danielkalo/Documents/CS 7180 - Vibe Coding/Project 3 - Agence/server\" && npx eslint . --quiet 2>&1 | tail -5 && echo '[Stop hook] Lint check complete'"
+          }
+        ]
+      }
     ]
   }
 }
