@@ -17,16 +17,16 @@ docs/TODO.md
 hw5-retrospective.md
 screenshots/
 original-proposal.md
-*.png
 *fixes.md
 aesthetic-redesign.md
 post-p3.md
 video-demo-script.md
+docs/reflection.md
+docs/blog-post.md
 
 # OMC runtime state (session scratch, not project code)
 .omc/
 server/.omc/
 .vercel
-docs/reflection.md
 server/reports/
 server/.stryker-tmp/
