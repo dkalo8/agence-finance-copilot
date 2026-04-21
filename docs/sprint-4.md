@@ -15,13 +15,20 @@
 - **Step 5 Polish**: goal types, drag-and-drop reordering, risk tolerance, account selection, household view toggle, portfolio dropdown fix
 - **5b Code Review**: Multi-agent parallel review → 11 targeted fixes
 - **About page**: public `/about` route explaining architecture, agents, and nav guide
+- **Phase 10**: Documentation & Demo — Blog post, 10-minute screencast, project thumbnail, and final showcase submission
+- **Bonus**: 10 bonus points achieved via fast-check, Stryker mutation testing, and Agent SDK tool-use loop.
 
 ### Approach
 - Google Auth: `google-auth-library` token verify server-side; find-or-create covers 3 cases (existing Google, existing email, new user)
 - Watchlist news: Finnhub per-ticker, Promise.all, sessionStorage cache per ticker (not per list)
 - Password reset: JWT with separate secret + type field; SendGrid HTTPS (Render blocks SMTP ports)
 - Code review: parallel multi-agent review (security, architecture, tests, frontend) → fixes in priority order
-- All work on `feat/phase10-docs` worktree branch; merged via PR #7
+- **Phase 10 — Documentation & Demo**:
+    - Blog post: "Building a Multi-Agent Finance Copilot with Claude Code" (1,600+ words) published to LinkedIn.
+    - Screencast: 10-minute feature walkthrough + agent architecture narration.
+    - Thumbnail: Created optimized `agence-thumbnail.png` (500px) for showcase.
+    - Final Submission: Showcase form submitted with GitHub/Vercel URLs.
+- All work on `feat/phase10-docs` worktree branch; merged via PR #7. All final submission artifacts pushed directly to `main`.
 
 ### Definition of Done
 - 246 tests passing across all suites
@@ -37,7 +44,11 @@
 
 **2026-04-13** — 9D, 9E, 9F all complete. Step 5 polish items underway (goal types, drag-and-drop, risk profile, account selection, household view). Starting multi-agent code review.
 
-**2026-04-14** — 11 code review fixes complete + verified. About page built and mobile-fixed. Worktree created for Phase 10 doc work. Closing out sprint.
+**2026-04-14** — 11 code review fixes complete + verified. About page built and mobile-fixed. Worktree created for Phase 10 doc work.
+
+**2026-04-20** — Blog post drafted and CRLF issue fixed. Thumbnail resized and pushed. LinkedIn hook finalized.
+
+**2026-04-21** — Final submission completed. Showcase form submitted. Sprint 4 closed out. Project memory finalized.
 
 ---
 
